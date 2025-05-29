@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de E-mail | Desafio Engenharia de Suporte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Visualization & Content Choices:
+        Caso 1: Bar chart (Chart.js) for spam score, HTML/CSS diagram for sender mismatch. Goal: Inform severity & key cause. Interaction: Chart hover.
+        Caso 2: HTML slider + JS for spam threshold. Goal: Compare impact of settings. Interaction: Slider changes descriptive text/color.
+        Caso 3: HTML/CSS side-by-side comparison for log quality. Goal: Inform. Interaction: None (visual).
+        Caso 4: HTML/CSS diagram for redirection flow, prominent HTML/CSS alert. Goal: Alert to risk. Interaction: None (visual emphasis).
+        All textual content adapted from the source report, placed within the relevant sections and interactive components.
+        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->    <style>
+        /* CSS Custom Properties for Design System */
+        :root {
+            --primary-color: #0D9488;
+            --primary-hover: #14B8A6;
+            --accent-color: #D97706;
+            --accent-hover: #F59E0B;
+            --surface: #FFFFFF;
+            --background: #F8FAFC;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --border-radius: 12px;
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-elevated: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+        }
+
+        /* Base Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            background: var(--background);
+        }
+
+        /* Animation Keyframes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+
+        @keyframes loading {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes scroll-reveal {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced Component Styles */
+        .tab-content { 
+            display: none; 
+            animation: fadeInUp 0.6s ease-out;
+        }
+        .tab-content.active { 
+            display: block; 
+        }
+
+        .nav-link {
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            font-weight: 500;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-link.active::before,
+        .nav-link:hover::before {
+            left: 0;
+        }
+
+        .nav-link.active, .nav-link:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .tab-button {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            background-color: #E5E7EB;
+            color: #374151;
+            font-weight: 500;
+            border: 2px solid transparent;
+        }
+
+        .tab-button.active, .tab-button:hover {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-color);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+            border-radius: var(--border-radius);
+            background: var(--surface);
+            box-shadow: var(--shadow-card);
+            padding: 1rem;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .chart-container:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .content-section {
+            padding: 2rem 1rem;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-card);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .content-section:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        .section-intro {
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-critical {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border-left-width: 4px;
+            border-color: #EF4444;
+            padding: 1rem;
+            color: #B91C1C;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-critical::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        /* Card Enhancement */
+        .card {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-card);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        /* Enhanced Header */
+        header {
+            background: var(--gradient-accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        /* Smooth reveal animation for sections */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Enhanced Interactive Elements */
+        .interactive-element {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .interactive-element:hover {
+            transform: scale(1.02);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--gradient-primary);
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: var(--shadow-card);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            box-shadow: var(--shadow-elevated);
+            transform: translateY(-4px);
+        }
+
+        /* Loading States */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: loading 1s ease-in-out infinite;
+        }
+
+        /* Enhanced Typography */
+        h1, h2, h3 {
+            position: relative;
+        }
+
+        h1::after, h2::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+
+        /* Responsive Enhancements */
+        @media (max-width: 768px) {
+            .content-section {
+                padding: 1.5rem 1rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-stone-100 text-stone-800">    <header class="bg-amber-700 text-white p-6 shadow-lg">
+        <div class="container mx-auto">
+            <h1 class="text-3xl font-bold">🔍 Análise de Problemas de E-mail</h1>
+            <p class="text-amber-100 mt-2">Diagnóstico interativo e soluções para problemas de entrega</p>
+        </div>
+    </header>
+
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex flex-wrap justify-center space-x-2 sm:space-x-4 p-4">
+            <button class="nav-link active" data-target="visao-geral">Visão Geral</button>
+            <button class="nav-link" data-target="caso-1">Caso 1: Rejeitado</button>
+            <button class="nav-link" data-target="caso-2">Caso 2: Filtro Permissivo</button>
+            <button class="nav-link" data-target="caso-3">Caso 3: Logs Incompletos</button>
+            <button class="nav-link" data-target="caso-4">Caso 4: Redirecionamento</button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-4 sm:p-6 md:p-8">
+        <div id="visao-geral" class="page-content active">
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-amber-700 mb-4">Bem-vindo(a) ao Painel Interativo!</h2>
+                <p class="section-intro">
+                    Este painel foi criado para ajudar a entender os problemas recentes identificados em nosso sistema de e-mails.
+                    Aqui, você encontrará uma explicação simplificada de cada caso, usando analogias do dia a dia,
+                    para que todos possam compreender as causas, consequências e as soluções propostas.
+                    Navegue pelas seções para explorar cada cenário em detalhe. O objetivo é tornar a informação técnica acessível e clara.
+                </p>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-stone-700 mb-3">Resumo Geral do Guia</h3>
+                    <p class="text-stone-600 leading-relaxed">
+                        Cuidar do nosso sistema de e-mail é como cuidar da portaria e do carteiro de um prédio grande e importante.
+                        Precisamos de "porteiros" (filtros de spam) atentos, "carteiros" (configurações de envio) confiáveis
+                        e com boa reputação, "livros de ocorrências" (logs) bem escritos, e garantir que ninguém
+                        mal-intencionado crie "desvios de correspondência" secretos. As soluções propostas na análise
+                        são todas para garantir que nossas comunicações por e-mail sejam seguras, eficientes e cheguem
+                        a quem devem chegar!
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <div id="caso-1" class="page-content hidden">
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-amber-700 mb-4">Caso 1: E-mail Importante Foi Parar no Lixo Eletrônico (Spam)</h2>
+                <p class="section-intro">
+                    Nesta seção, exploramos por que e-mails legítimos podem ser classificados como spam.
+                    Vamos entender as causas técnicas, como a reputação do remetente e a formatação do e-mail,
+                    e como isso impacta a entrega das nossas comunicações importantes.
+                    Interaja com os elementos abaixo para visualizar alguns dos problemas.
+                </p>
+                <div class="bg-white p-6 rounded-lg shadow mb-6">
+                    <p class="text-lg text-stone-700 mb-3"><strong>O Problema:</strong> Imagina que você enviou um convite de festa super importante (um e-mail de marketing do Instituto Mais Brasil), mas ele foi direto para a caixa de spam dos seus convidados, e muitos nem viram. É isso que estava acontecendo. Nossos e-mails legítimos estavam sendo confundidos com propaganda indesejada.</p>
+                </div>
+
+                <div class="mb-6">
+                    <div class="flex border-b border-stone-300">
+                        <button class="tab-button active" data-case="1" data-tab="causa-1">Por que Aconteceu?</button>
+                        <button class="tab-button" data-case="1" data-tab="consequencia-1">Consequências</button>
+                        <button class="tab-button" data-case="1" data-tab="solucao-1">Como Consertar?</button>
+                    </div>
+                    <div id="causa-1" class="tab-content active p-4 border border-t-0 border-stone-300 rounded-b-lg">
+                        <ul class="list-disc list-inside space-y-2 text-stone-600">
+                            <li><strong>Remetente Confuso:</strong> O nome no envelope (remetente técnico, tipo `sendgrid.net`) era diferente do nome que assinava a carta (`apoio@institutomaisbrasil.org.br`). Gera desconfiança.</li>
+                            <li><strong>Aparência da Carta:</strong> O corpo do e-mail estava bagunçado (fontes com pouco contraste, só imagens, HTML estranho).</li>
+                            <li><strong>Má Reputação:</strong> O servidor de envio estava em "listas negras" (RBLs).</li>
+                            <li><strong>Pontuação Alta de Spam:</strong> Recebeu nota 48.41 (muito alta).</li>
+                        </ul>
+                        <div class="mt-6 grid md:grid-cols-2 gap-6 items-center">
+                            <div>
+                                <h4 class="text-lg font-semibold text-stone-700 mb-2">Visualizando o Score de Spam:</h4>
+                                <div class="chart-container">
+                                    <canvas id="spamScoreChart"></canvas>
+                                </div>
+                                <p class="text-sm text-center text-stone-500 mt-2">Comparativo do score de spam observado versus um limite aceitável.</p>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-stone-700 mb-2">Exemplo de Remetente Confuso:</h4>
+                                <div class="space-y-3">
+                                    <div class="p-3 bg-amber-100 border border-amber-300 rounded">
+                                        <p class="font-medium">Na "Assinatura" da Carta (Header From):</p>
+                                        <p class="text-sm text-amber-800"><code>apoio@institutomaisbrasil.org.br</code></p>
+                                    </div>
+                                    <div class="text-center text-2xl font-bold text-red-500">≠</div>
+                                    <div class="p-3 bg-teal-100 border border-teal-300 rounded">
+                                        <p class="font-medium">No "Envelope" do Correio (Sender/Return-Path):</p>
+                                        <p class="text-sm text-teal-800"><code>bounces+...@sendgrid.net</code></p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-center text-stone-500 mt-2">Essa diferença pode levantar suspeitas nos filtros de spam.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="consequencia-1" class="tab-content p-4 border border-t-0 border-stone-300 rounded-b-lg hidden">
+                        <ul class="list-disc list-inside space-y-2 text-stone-600">
+                            <li>Nossas mensagens importantes não chegam às pessoas.</li>
+                            <li>Perdemos oportunidades de comunicação, negócios ou engajamento.</li>
+                            <li>A reputação do nosso domínio (`institutomaisbrasil.org.br`) fica prejudicada.</li>
+                        </ul>
+                    </div>
+                    <div id="solucao-1" class="tab-content p-4 border border-t-0 border-stone-300 rounded-b-lg hidden">
+                        <ul class="list-disc list-inside space-y-2 text-stone-600">
+                            <li><strong>"Carimbo Oficial" (SPF, DKIM, DMARC):</strong> Configurar corretamente as "assinaturas digitais" para alinhar o remetente técnico com o domínio da organização.</li>
+                            <li><strong>Melhorar a "Escrita" do E-mail:</strong> Usar HTML limpo, profissional e acessível.</li>
+                            <li><strong>Limpar o Nome na Praça (Sair das RBLs):</strong> Após correções, solicitar remoção das listas.</li>
+                            <li><strong>Ajustar a Integração com a SendGrid:</strong> Garantir que use nossa "identidade oficial".</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="caso-2" class="page-content hidden">
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-amber-700 mb-4">Caso 2: Nosso Filtro de Spam Estava "Bonzinho Demais"</h2>
+                 <p class="section-intro">
+                    Aqui, investigamos como configurações de filtro de spam muito permissivas podem comprometer a segurança e a produtividade.
+                    Veja como um simples ajuste no "nível de suspeita" pode fazer uma grande diferença na quantidade de lixo eletrônico
+                    que chega às caixas de entrada. Experimente o controle interativo para entender o impacto.
+                </p>
+                <div class="bg-white p-6 rounded-lg shadow mb-6">
+                    <p class="text-lg text-stone-700 mb-3"><strong>O Problema:</strong> Nosso próprio sistema, que deveria barrar e-mails indesejados (spam) de entrarem nas nossas caixas de entrada, estava deixando passar quase tudo. É como ter um segurança na porta que só barra alguém se a pessoa for um vilão de desenho animado óbvio.</p>
+                </div>
+
+                <div class="mb-6">
+                     <div class="flex border-b border-stone-300">
+                        <button class="tab-button active" data-case="2" data-tab="causa-2">Por que Aconteceu?</button>
+                        <button class="tab-button" data-case="2" data-tab="consequencia-2">Consequências</button>
+                        <button class="tab-button" data-case="2" data-tab="solucao-2">Como Consertar?</button>
+                    </div>
+                    <div id="causa-2" class="tab-content active p-4 border border-t-0 border-stone-300 rounded-b-lg">
+                        <p class="text-stone-600 mb-4">As configurações do nosso filtro de spam estavam muito permissivas. O "nível de suspeita" (threshold S-300) para barrar um e-mail estava em 50, quando o recomendado é algo em torno de 5 ou 6.</p>
+                        <div class="bg-amber-50 p-6 rounded-lg border border-amber-200">
+                            <label for="spamThreshold" class="block text-lg font-semibold text-stone-700 mb-2">Ajustar Limite de Spam (S-300): <span id="thresholdValue" class="font-bold text-teal-600">50</span></label>
+                            <input type="range" id="spamThreshold" min="1" max="50" value="50" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600">
+                            <div id="thresholdFeedback" class="mt-3 p-3 rounded-md text-center font-medium"></div>
+                        </div>
+                    </div>
+                    <div id="consequencia-2" class="tab-content p-4 border border-t-0 border-stone-300 rounded-b-lg hidden">
+                        <ul class="list-disc list-inside space-y-2 text-stone-600">
+                            <li>Nossas caixas de entrada ficam lotadas de lixo eletrônico.</li>
+                            <li>Aumenta o risco de clicarmos em e-mails perigosos (vírus, golpes).</li>
+                            <li>Perdemos tempo limpando a caixa de entrada.</li>
+                            <li>O servidor de e-mail fica sobrecarregado.</li>
+                        </ul>
+                    </div>
+                    <div id="solucao-2" class="tab-content p-4 border border-t-0 border-stone-300 rounded-b-lg hidden">
+                        <ul class="list-disc list-inside space-y-2 text-stone-600">
+                            <li><strong>Ajustar o "Nível de Suspeita":</strong> Configurar o filtro para ser mais rigoroso (ex: S-300 entre 4 e 6).</li>
+                            <li><strong>Ajustes Graduais:</strong> Monitorar e ajustar S-100 e S-200 também.</li>
+                            <li><strong>Treinar os Usuários:</strong> Ensinar a identificar e reportar spam.</li>
+                            <li><strong>Monitorar Métricas:</strong> Acompanhar a eficácia do filtro.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="caso-3" class="page-content hidden">
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-amber-700 mb-4">Caso 3: Os Registros do Sistema Estavam Incompletos (Diário Misterioso)</h2>
+                <p class="section-intro">
+                    Logs são o "diário" do sistema, registrando o que acontece. Nesta seção, veremos a importância de logs detalhados
+                    para diagnosticar problemas e garantir a segurança. Compare um exemplo de log inútil com um log ideal
+                    para entender por que a verbosidade e o formato são cruciais.
+                </p>
+                <div class="bg-white p-6 rounded-lg shadow mb-6">
+                    <p class="text-lg text-stone-700 mb-3"><strong>O Problema:</strong> O sistema de e-mail tem um "diário" onde anota tudo o que acontece (são os "logs"). Só que esse diário estava sendo escrito com códigos muito curtos e sem sentido, como "d71" ou "bUM". Se algo desse errado, não teríamos como saber o que aconteceu.</p>
+                </div>
+
+                <div class="mb-6">
+                    <div class="flex border-b border-stone-300">
+                        <button class="tab-button active" data-case="3" data-tab="causa-3">Por que Aconteceu?</button>
+                        <button class="tab-button" data-case="3" data-tab="consequencia-3">Consequências</button>
+                        <button class="tab-button" data-case="3" data-tab="solucao-3">Como Consertar?</button>
+                    </div>
+                    <div id="causa-3" class="tab-content active p-4 border border-t-0 border-stone-300 rounded-b-lg">
+                        <p class="text-stone-600 mb-4">Provavelmente, o sistema foi configurado para registrar pouquíssima informação, para economizar espaço ou por um erro.</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                                <h4 class="text-lg font-semibold text-red-700 mb-2">Exemplo de Log Ruim (Incompleto):</h4>
+                                <pre class="text-sm text-red-600 bg-white p-2 rounded overflow-x-auto"><code>Aug 27, 2024 @ 09:35:35.998 d71
+Aug 27, 2024 @ 09:35:31.214 bUM
+Aug 27, 2024 @ 09:35:00.997 bn-</code></pre>
+                                <p class="text-xs text-red-500 mt-1">Difícil entender o que aconteceu.</p>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <h4 class="text-lg font-semibold text-green-700 mb-2">Exemplo de Log Ideal (Detalhado):</h4>
+                                <pre class="text-sm text-green-600 bg-white p-2 rounded overflow-x-auto"><code>2024-08-27 09:35:35 INFO: Email received. From: user@example.com, To: contact@company.com, Subject: "Meeting Request", Status: Delivered, Size: 15KB
+2024-08-27 09:35:31 WARN: Login attempt failed. User: admin, IP: 192.168.1.100
+2024-08-27 09:35:00 INFO: Service restarted. Reason: Scheduled maintenance.</code></pre>
+                                <p class="text-xs text-green-500 mt-1">Claro, informativo e útil para diagnóstico.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="consequencia-3" class="tab-content p-4 border border-t-0 border-stone-300 rounded-b-lg hidden">
+                        <ul class="list-disc list-inside space-y-2 text-stone-600">
+                            <li><strong>Dificuldade de Diagnóstico:</strong> Sem pistas para descobrir falhas.</li>
+                            <li><strong>Falhas Escondidas:</strong> Problemas podem passar despercebidos.</li>
+                            <li><strong>Impossibilidade de Auditoria:</strong> Não dá para verificar quem fez o quê.</li>
+                            <li><strong>Impacto na Segurança:</strong> Difícil detectar ou investigar ataques.</li>
+                        </ul>
+                    </div>
+                    <div id="solucao-3" class="tab-content p-4 border border-t-0 border-stone-300 rounded-b-lg hidden">
+                        <ul class="list-disc list-inside space-y-2 text-stone-600">
+                            <li><strong>Aumentar os Detalhes (Verbosidade):</strong> Configurar para registrar informações completas.</li>
+                            <li><strong>Formato Padrão:</strong> Usar formato organizado e estruturado (ex: JSON, CSV).</li>
+                            <li><strong>Monitorar Atividades:</strong> Ficar de olho em padrões estranhos.</li>
+                            <li><strong>Revisar Configurações:</strong> Garantir que estejam adequadas.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="caso-4" class="page-content hidden">
+            <section class="content-section">
+                 <h2 class="text-2xl font-semibold text-amber-700 mb-4">Caso 4: Filtro de Redirecionamento Perigoso</h2>
+                <p class="section-intro">
+                    Este é o caso mais crítico. Uma regra mal configurada pode expor todos os e-mails da empresa.
+                    Vamos visualizar como esse redirecionamento funciona e entender a urgência em desativar
+                    regras perigosas e investigar suas origens. A segurança dos dados é primordial.
+                </p>
+                <div class="bg-white p-6 rounded-lg shadow mb-6">
+                    <p class="text-lg text-stone-700 mb-3"><strong>O Problema:</strong> Existia uma regra no nosso sistema que pegava UMA CÓPIA DE TODOS OS E-MAILS (todos mesmo, sem exceção!) que a empresa recebia e enviava para um endereço de e-mail externo e suspeito (`financeiro@partextoyeah.com.br`).</p>
+                </div>
+                 <div class="alert-critical rounded-lg mb-6">
+                    <h4 class="font-bold text-lg">⚠️ ALERTA DE RISCO CRÍTICO! ⚠️</h4>
+                    <p>Este tipo de configuração representa uma grave falha de segurança com potencial para vazamento massivo de dados.</p>
+                </div>
+                <div class="mb-6">
+                    <div class="flex border-b border-stone-300">
+                        <button class="tab-button active" data-case="4" data-tab="causa-4">Por que Aconteceu?</button>
+                        <button class="tab-button" data-case="4" data-tab="consequencia-4">Consequências</button>
+                        <button class="tab-button" data-case="4" data-tab="solucao-4">Como Consertar?</button>
+                    </div>
+                    <div id="causa-4" class="tab-content active p-4 border border-t-0 border-stone-300 rounded-b-lg">
+                        <p class="text-stone-600 mb-4">Alguém criou essa regra de "redirecionamento", que poderia ser um erro de configuração (sem condições de filtro) ou uma ação maliciosa. O nome genérico "REDIRECIONAMENTO" pode ter dificultado sua detecção.</p>
+                        <h4 class="text-lg font-semibold text-stone-700 mb-2 text-center">Diagrama do Redirecionamento Perigoso:</h4>
+                        <div class="flex flex-col items-center space-y-2 p-4 bg-stone-50 rounded-lg">
+                            <div class="p-3 bg-blue-100 border border-blue-300 rounded text-center w-full max-w-md">
+                                <p class="font-medium">E-mails da Empresa (Entrada/Saída)</p>
+                                <p class="text-sm text-blue-700">Todos os e-mails, sem exceção</p>
+                            </div>
+                            <div class="text-2xl text-stone-500">⬇️</div>
+                            <div class="p-3 bg-yellow-100 border border-yellow-400 rounded text-center w-full max-w-md">
+                                <p class="font-medium">Regra "REDIRECIONAMENTO"</p>
+                                <p class="text-sm text-yellow-700">Sem condições especificadas (aplica-se a tudo)</p>
+                            </div>
+                            <div class="text-2xl text-red-500">➡️</div>
+                            <div class="p-3 bg-red-100 border border-red-400 rounded text-center w-full max-w-md">
+                                <p class="font-medium">Destino Externo Suspeito</p>
+                                <p class="text-sm text-red-700"><code>financeiro@partextoyeah.com.br</code> ⚠️</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="consequencia-4" class="tab-content p-4 border border-t-0 border-stone-300 rounded-b-lg hidden">
+                        <ul class="list-disc list-inside space-y-2 text-red-700">
+                            <li><strong>Vazamento Massivo de Dados:</strong> Contratos, dados de clientes, senhas, etc.</li>
+                            <li><strong>Comprometimento da Segurança:</strong> Risco de golpes, roubo de identidade.</li>
+                            <li><strong>Problemas Legais:</strong> Violação de privacidade e LGPD.</li>
+                            <li><strong>Prejuízo Financeiro e de Reputação:</strong> Perda de confiança.</li>
+                        </ul>
+                    </div>
+                    <div id="solucao-4" class="tab-content p-4 border border-t-0 border-stone-300 rounded-b-lg hidden">
+                        <ul class="list-disc list-inside space-y-2 text-stone-600">
+                            <li><strong>DESATIVAR A REGRA IMEDIATAMENTE!</strong> (Prioridade máxima)</li>
+                            <li><strong>Investigar a Fundo:</strong> Quem criou? Quando? Qual o impacto?</li>
+                            <li><strong>Notificar os Afetados:</strong> Se dados sensíveis vazaram.</li>
+                            <li><strong>Implementar Controles Mais Rígidos:</strong> Revisão e aprovação de regras.</li>
+                            <li><strong>Revisar Políticas de Segurança:</strong> Reforçar treinamentos.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="bg-stone-800 text-stone-300 text-center p-6 mt-12">
+        <p>&copy; <span id="currentYear"></span> Painel Interativo de Análise de E-mail. Conteúdo adaptado do "Guia Simples dos Problemas de E-mail".</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pageContents = document.querySelectorAll('.page-content');
+            const tabButtons = document.querySelectorAll('.tab-button');
+
+            // Navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const targetId = this.getAttribute('data-target');
+                    pageContents.forEach(content => {
+                        if (content.id === targetId) {
+                            content.classList.remove('hidden');
+                            content.classList.add('active');
+                        } else {
+                            content.classList.add('hidden');
+                            content.classList.remove('active');
+                        }
+                    });
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            // Tabs within cases
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const caseNum = this.getAttribute('data-case');
+                    const tabId = this.getAttribute('data-tab');
+
+                    // Deactivate other tab buttons in the same case
+                    document.querySelectorAll(`.tab-button[data-case="${caseNum}"]`).forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Hide all tab contents in the same case and show the target one
+                    document.querySelectorAll(`#caso-${caseNum} .tab-content`).forEach(content => content.classList.add('hidden'));
+                    document.getElementById(tabId).classList.remove('hidden');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Chart for Caso 1: Spam Score
+            const spamScoreCtx = document.getElementById('spamScoreChart')?.getContext('2d');
+            if (spamScoreCtx) {
+                new Chart(spamScoreCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Score Observado', 'Limite Aceitável'],
+                        datasets: [{
+                            label: 'Pontuação de Spam',
+                            data: [48.41, 5],
+                            backgroundColor: [
+                                'rgba(239, 68, 68, 0.6)', // red-500 with opacity
+                                'rgba(13, 148, 136, 0.6)'  // teal-600 with opacity
+                            ],
+                            borderColor: [
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(13, 148, 136, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Valor do Score'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y.toFixed(2);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Interactive Slider for Caso 2: Spam Threshold
+            const thresholdSlider = document.getElementById('spamThreshold');
+            const thresholdValueDisplay = document.getElementById('thresholdValue');
+            const thresholdFeedback = document.getElementById('thresholdFeedback');
+
+            function updateFeedback(value) {
+                thresholdValueDisplay.textContent = value;
+                thresholdFeedback.classList.remove('bg-red-200', 'text-red-700', 'bg-yellow-200', 'text-yellow-700', 'bg-green-200', 'text-green-700');
+                if (value > 10) {
+                    thresholdFeedback.textContent = 'Nível de Proteção: Baixo. Muitos e-mails de spam podem passar!';
+                    thresholdFeedback.classList.add('bg-red-200', 'text-red-700');
+                } else if (value >= 6 && value <= 10) {
+                    thresholdFeedback.textContent = 'Nível de Proteção: Médio. Alguns e-mails de spam podem passar.';
+                    thresholdFeedback.classList.add('bg-yellow-200', 'text-yellow-700');
+                } else {
+                    thresholdFeedback.textContent = 'Nível de Proteção: Alto. Filtro mais eficaz contra spam.';
+                    thresholdFeedback.classList.add('bg-green-200', 'text-green-700');
+                }
+            }
+
+            if (thresholdSlider) {
+                updateFeedback(thresholdSlider.value); // Initial feedback
+                thresholdSlider.addEventListener('input', function () {
+                    updateFeedback(this.value);
+                });
+            }
+              // Set current year in footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            // Progress Bar
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress-bar';
+            document.body.appendChild(progressBar);
+
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.pageYOffset;
+                const docHeight = document.body.offsetHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+                progressBar.style.width = scrollPercent + '%';
+            });
+
+            // Back to Top Button
+            const backToTopBtn = document.createElement('button');
+            backToTopBtn.innerHTML = '↑';
+            backToTopBtn.className = 'back-to-top';
+            backToTopBtn.setAttribute('aria-label', 'Voltar ao topo');
+            document.body.appendChild(backToTopBtn);
+
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTopBtn.classList.add('visible');
+                } else {
+                    backToTopBtn.classList.remove('visible');
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Scroll Reveal Animation
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('reveal');
+                observer.observe(section);
+            });
+
+            // Enhanced Image Loading
+            document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+                img.addEventListener('load', () => {
+                    img.style.opacity = '1';
+                });
+            });
+
+            // Google Analytics 4 (Template - replace with actual GA4 measurement ID)
+            /*
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'GA_MEASUREMENT_ID');
+            */
+        });
+    </script>
+
+    <!-- Google Analytics 4 (Uncomment and replace with actual measurement ID) -->
+    <!--
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    -->
+
+    <!-- Microsoft Clarity (Uncomment and replace with actual project ID) -->
+    <!--
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "PROJECT_ID");
+    </script>
+    -->
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "desafio-engenharia-suporte",
+  "version": "1.0.0",
+  "description": "Projeto técnico completo com soluções para desafios de engenharia de suporte",
+  "main": "index.html",  "scripts": {
+    "dev": "npx live-server --port=3000 --open=index.html",
+    "serve": "npx http-server -p 3000 -o",
+    "deploy": "npx gh-pages -d ."
+  },
+  "keywords": [
+    "engenharia-suporte",
+    "análise-dados",
+    "github-pages",
+    "web-performance",
+    "dashboard",
+    "technical-challenge"
+  ],
+  "author": "Engenheiro de Suporte",
+  "license": "MIT",  "dependencies": {
+    "gh-pages": "^6.0.0",
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  }
+}

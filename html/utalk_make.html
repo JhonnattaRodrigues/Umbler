@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integração Umbler Talk + Make | Desafio Engenharia de Suporte</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    :root {
+        --primary-blue: #0ea5e9;
+        --secondary-blue: #0284c7;
+        --accent-blue: #0369a1;
+        --light-blue: #e0f2fe;
+        /* --dark-blue removido */
+        --success-green: #10b981;
+        --warning-yellow: #f59e0b;
+        --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --card-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        min-height: 100vh;
+        scroll-behavior: smooth;
+    }
+
+    /* Animações */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    /* Container principal com animação */
+    .main-container {
+        animation: fadeInUp 0.8s ease-out;
+        transition: all 0.3s ease;
+    }
+
+    .main-container:hover {
+        box-shadow: var(--card-shadow-hover);
+        transform: translateY(-2px);
+    }
+
+    /* Headers animados */
+    header {
+        background: var(--gradient-bg);
+        color: white;
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px 12px 0 0;
+        margin: -2rem -2rem 2rem -2rem;
+        padding: 2rem;
+    }
+
+    header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    h1, h2, h3 {
+        animation: slideInLeft 0.6s ease-out;
+    }
+
+    h2 {
+        position: relative;
+        padding-left: 20px;
+    }
+
+    h2::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 60%;
+        background: var(--primary-blue);
+        border-radius: 2px;
+    }
+
+    /* Seções com animação */
+    section {
+        animation: fadeInUp 0.6s ease-out;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        background: white;
+        box-shadow: var(--card-shadow);
+    }
+
+    section:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    /* Listas estilizadas */
+    ul li, ol li {
+        position: relative;
+        padding: 0.5rem 0;
+        transition: all 0.2s ease;
+        border-radius: 6px;
+        padding-left: 1.5rem;
+    }
+
+    ul li:hover, ol li:hover {
+        background: var(--light-blue);
+        padding-left: 2rem;
+    }
+
+    /* Links estilizados */
+    a {
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+    a:hover {
+        transform: translateY(-1px);
+    }
+
+    a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background: var(--primary-blue);
+        transition: width 0.3s ease;
+    }
+
+    a:hover::after {
+        width: 100%;
+    }
+
+    /* Imagens com hover effect */
+    img {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+    }
+
+    img:hover {
+        transform: scale(1.02);
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    /* Code blocks melhorados */
+    pre {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+    }
+
+    pre:hover {
+        box-shadow: var(--card-shadow-hover);
+        transform: translateY(-2px);
+    }
+
+    /* Tabelas estilizadas */
+    table {
+        border-collapse: collapse;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+    }
+
+    table:hover {
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    /* Badges e tags */
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: var(--primary-blue);
+        color: white;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        animation: pulse 2s infinite;
+        margin-right: 0.5rem;
+    }
+
+    .badge-success {
+        background: var(--success-green);
+    }
+
+    .badge-warning {
+        background: var(--warning-yellow);
+    }
+
+    /* Separadores estilizados */
+    hr {
+        border: none;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--primary-blue), transparent);
+        margin: 3rem 0;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Footer estilizado */
+    footer {
+        background: var(--gradient-bg);
+        color: white;
+        margin: 2rem -2rem -2rem -2rem;
+        padding: 2rem;
+        border-radius: 0 0 12px 12px;
+        text-align: center;
+    }
+
+    /* Estilos para highlight.js (Tomorrow Theme) - Mantidos e melhorados */
+    .hljs-comment,.hljs-quote{color:#8e908c}.hljs-variable,.hljs-template-variable,.hljs-tag,.hljs-name,.hljs-selector-id,.hljs-selector-class,.hljs-regexp,.hljs-deletion{color:#c82829}.hljs-number,.hljs-built_in,.hljs-builtin-name,.hljs-literal,.hljs-type,.hljs-params,.hljs-meta,.hljs-link{color:#f5871f}.hljs-attribute{color:#eab700}.hljs-string,.hljs-symbol,.hljs-bullet,.hljs-addition{color:#718c00}.hljs-title,.hljs-section{color:#4271ae}.hljs-keyword,.hljs-selector-tag{color:#8959a8}.hljs{display:block;overflow-x:auto;color:#4d4d4c;padding:.5em;border-radius:12px;box-shadow:var(--card-shadow)}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}
+
+    /* Estilos para mermaid melhorados */
+    .mermaid svg { 
+        background-color: white !important; 
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+    }
+
+    .mermaid:hover svg {
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    /* Back to top button */
+    .back-to-top {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--primary-blue);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        opacity: 0;
+        transform: translateY(100px);
+        transition: all 0.3s ease;
+        z-index: 1000;
+    }
+
+    .back-to-top.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .back-to-top:hover {
+        background: var(--secondary-blue);
+        transform: translateY(-5px);
+    }
+
+    /* Progress bar */
+    .progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 3px;
+        background: var(--primary-blue);
+        z-index: 9999;
+        transition: width 0.3s ease;
+    }
+
+    /* Scroll reveal animation */
+    .scroll-reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+    }
+
+    .scroll-reveal.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 leading-relaxed">
+  <!-- Progress Bar -->
+  <div class="progress-bar" id="progressBar"></div>
+  
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'GA_MEASUREMENT_ID');
+  </script>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default'
+    });
+
+    // Progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progressBar').style.width = scrolled + '%';
+    });
+
+    // Back to top button
+    const backToTop = document.createElement('button');
+    backToTop.innerHTML = '↑';
+    backToTop.className = 'back-to-top';
+    backToTop.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
+    document.body.appendChild(backToTop);
+
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        backToTop.classList.add('show');
+      } else {
+        backToTop.classList.remove('show');
+      }
+    });
+
+    // Scroll reveal animation
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const elements = document.querySelectorAll('section, .scroll-reveal');
+      elements.forEach(el => {
+        el.classList.add('scroll-reveal');
+        observer.observe(el);
+      });
+    });
+  </script>
+
+<div class="container mx-auto p-6 md:p-10 max-w-4xl bg-white shadow-xl rounded-lg my-10 main-container">
+    <header class="mb-10 pb-6 border-b border-slate-200 bg-gradient-to-r from-blue-100 to-blue-50 rounded-t-lg text-center">
+        <h1 class="text-4xl font-extrabold text-sky-800 mb-2">
+            <span class="text-3xl align-middle mr-2">🔗</span>
+            Integração Umbler Talk + Make
+        </h1>
+        <p class="text-sky-600 text-lg">Guia completo de implementação e automação de webhooks</p>
+    </header>
+
+    <p class="mb-6 text-slate-700">Este guia apresenta a implementação da integração entre uma plataforma de chat e o Make.com, conforme o fluxo definido no desafio técnico.</p>
+    
+    <section class="mb-8">
+        <h2 class="text-3xl font-semibold text-sky-600 mb-4"><strong>Pré-Requisitos</strong></h2>
+        <p class="mb-2 text-slate-700">Para esta implementação, foram utilizados:</p>
+        <ol class="list-decimal list-inside space-y-2 ml-4 text-slate-700">
+            <li class="mb-1">
+                <strong>Conta na plataforma de chat:</strong>
+                <ul class="list-disc list-inside space-y-1 ml-6 mt-1">
+                    <li>Canal do tipo &quot;Starter&quot;</li>
+                    <li>Credenciais de API da plataforma de chat</li>
+                </ul>
+            </li>
+            <li class="mb-1">
+                <strong>Conta no Make:</strong>
+                <ul class="list-disc list-inside space-y-1 ml-6 mt-1">
+                    <li>Conta gratuita criada em: <a href="https://www.make.com/en/register" class="text-blue-600 hover:text-blue-800 hover:underline">https://www.make.com/en/register</a></li>
+                </ul>
+            </li>
+            <li class="mb-1">
+                <strong>Google Sheets:</strong>
+                <ul class="list-disc list-inside space-y-1 ml-6 mt-1">
+                    <li>Planilha configurada para receber os registros das conversas</li>
+                </ul>
+            </li>
+        </ol>
+    </section>
+    <hr class="my-8 border-slate-300">
+
+    <section class="mb-8">
+        <h2 class="text-3xl font-semibold text-sky-600 mb-4"><strong>1. Visão Geral do Fluxo no Make</strong></h2>        <p class="mb-4 text-slate-700">O fluxo implementado no Make segue exatamente o padrão solicitado no desafio:</p>        <img src="../assets/fluxo_umler_talk.webp" 
+             alt="Fluxo completo no Make.com para integração Umbler Talk - diagrama do processo automatizado" 
+             class="my-4 rounded-lg shadow-md border border-slate-200"
+             loading="lazy"
+             width="800"
+             height="600">
+    </section>
+    
+    <section class="mb-8">
+        <h2 class="text-3xl font-semibold text-sky-600 mb-4"><strong>2. Configuração do Webhook e Módulos</strong></h2>
+        <h3 class="text-2xl font-medium text-sky-700 mt-6 mb-3"><strong>2.1. Configuração do Webhook</strong></h3>
+        <p class="mb-2 text-slate-700">Foi configurado um webhook personalizado chamado &quot;Trial Webhook&quot; para receber os dados enviados pela plataforma de chat:</p>
+        <ul class="list-disc list-inside space-y-1 ml-4 mb-4 text-slate-700">
+            <li><strong>URL do webhook</strong>: https://help.make.com/webhooks</li>
+            <li><strong>Método</strong>: POST</li>
+        </ul>
+        <p class="text-slate-700">Este webhook é o ponto de entrada no sistema Make, recebendo os dados quando um cliente em teste grátis inicia uma conversa na plataforma de chat.</p>
+        
+        <h3 class="text-2xl font-medium text-sky-700 mt-6 mb-3"><strong>2.2. Configuração do Webhook na Plataforma de Chat</strong></h3>
+        <p class="mb-2 text-slate-700">No lado da plataforma de chat, foi configurado o envio de dados para o webhook no Make:</p>
+        <ul class="list-disc list-inside space-y-1 ml-4 mb-2 text-slate-700">
+            <li><strong>Endpoint</strong>: https://help.make.com/webhooks</li>
+            <li><strong>Método</strong>: POST</li>
+            <li><strong>Conteúdo</strong>:</li>
+        </ul>
+        <pre class="hljs bg-slate-800 text-sm text-white p-4 rounded-md overflow-x-auto mb-4"><code><div>{
+  <span class="hljs-attr">"LinkdaConversa"</span>: <span class="hljs-string">"https://plataforma-chat.com/chats/{{Conversa.Id}}"</span>,
+  <span class="hljs-attr">"NomePrincipalDoContato"</span>: <span class="hljs-string">"{{Contato.NomeCompleto}}"</span>
+}
+</div></code></pre>
+        
+        <h3 class="text-2xl font-medium text-sky-700 mt-6 mb-3"><strong>2.3. Tratamento de Dados e Variáveis</strong></h3>
+        <p class="mb-2 text-slate-700">Após o recebimento dos dados pelo webhook, foi configurada uma variável &quot;Data_Atual&quot; utilizando a função:</p>
+        <pre class="hljs bg-slate-800 text-sm text-white p-4 rounded-md overflow-x-auto mb-4"><code><div>formatDate( now ; DD/MM/YYYY HH:mm:ss )
+</div></code></pre>
+        <p class="text-slate-700">Esta variável armazena o momento exato em que os dados foram processados no Make, garantindo consistência no registro temporal das interações.</p>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="text-3xl font-semibold text-sky-600 mb-4"><strong>3. Registro de Dados na Planilha</strong></h2>
+        <p class="mb-2 text-slate-700">A etapa seguinte configura o registro dos dados na planilha do Google Sheets:</p>
+        <ul class="list-disc list-inside space-y-1 ml-4 mb-2 text-slate-700">
+            <li><strong>Ação</strong>: Add a Row</li>
+            <li><strong>Colunas configuradas</strong>:
+                <ul class="list-disc list-inside space-y-1 ml-6 mt-1">
+                    <li><strong>A (LinkDaConversa)</strong>: URL da conversa recebida do webhook</li>
+                    <li><strong>B (NomesCompletos)</strong>: Nome do contato principal</li>
+                    <li><strong>C (Data)</strong>: Data e hora formatadas da interação</li>
+                </ul>
+            </li>
+        </ul>
+        <p class="mb-4 text-slate-700">A estrutura da planilha foi organizada para facilitar a consulta e análise posterior dos registros.</p>
+        <p class="mb-4 text-slate-700">A solução está operando corretamente, com os dados sendo registrados na planilha conforme o exemplo:</p>
+        <div class="overflow-x-auto mb-4">
+            <table class="min-w-full bg-white border border-slate-300 rounded-md shadow">
+                <thead class="bg-slate-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">LinkDaConversa</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">NomesCompletos</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">Data</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700"><a href="https://plataforma-chat.com/chats/abc123" class="text-blue-600 hover:text-blue-800 hover:underline">https://plataforma-chat.com/chats/abc123</a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">Nome Exemplo</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">21/05/2025 21:15:01</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="text-3xl font-semibold text-sky-600 mb-4"><strong>4. Envio de Nota no Chat</strong></h2>
+        <h3 class="text-2xl font-medium text-sky-700 mt-6 mb-3"><strong>4.1. Configuração do Módulo HTTP</strong></h3>
+        <p class="mb-2 text-slate-700">Após o registro na planilha, foi configurado um módulo HTTP para enviar uma nota no chat da plataforma:</p>
+        <ul class="list-disc list-inside space-y-1 ml-4 mb-2 text-slate-700">
+            <li><strong>Método</strong>: POST</li>
+            <li><strong>URL</strong>: <code>{{1.LinkdaConversa}}/notes</code> (onde LinkdaConversa é a URL recebida via webhook)</li>
+            <li><strong>Headers</strong>:
+                <ul class="list-disc list-inside space-y-1 ml-6 mt-1">
+                    <li><strong>Content-Type</strong>: application/json</li>
+                    <li><strong>Authorization</strong>: Bearer [token-de-autorizacao]</li>
+                </ul>
+            </li>
+            <li><strong>Body (JSON)</strong>:</li>
+        </ul>
+        <pre class="hljs bg-slate-800 text-sm text-white p-4 rounded-md overflow-x-auto mb-4"><code><div>{
+  <span class="hljs-attr">"content"</span>: <span class="hljs-string">"Registro feito no Google Sheets para {{1.NomePrincipalDoContato}} às {{formatDate(now; DD/MM/YYYY HH:mm:ss)}}"</span>
+}
+</div></code></pre>
+        <ul class="list-disc list-inside space-y-1 ml-4 mb-4 text-slate-700">
+            <li><strong>Parse response</strong>: Yes</li>
+        </ul>
+        
+        <h3 class="text-2xl font-medium text-sky-700 mt-6 mb-3"><strong>4.2. Resposta do Webhook</strong></h3>
+        <p class="mb-2 text-slate-700">Além disso, o fluxo envia uma resposta ao webhook confirmando o processamento bem-sucedido:</p>
+        <ul class="list-disc list-inside space-y-1 ml-4 mb-2 text-slate-700">
+            <li><strong>Status</strong>: 200</li>
+            <li><strong>Corpo da resposta</strong>:</li>
+        </ul>
+        <pre class="hljs bg-slate-800 text-sm text-white p-4 rounded-md overflow-x-auto mb-4"><code><div>{
+  <span class="hljs-attr">"status"</span>: <span class="hljs-string">"sucesso"</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Webhook processado com sucesso pelo Make."</span>
+}
+</div></code></pre>
+        <p class="text-slate-700">Esta confirmação garante que a plataforma de chat reconheça que o processamento foi concluído com êxito.</p>
+    </section>
+    <hr class="my-8 border-slate-300">
+
+    <section class="mb-8">
+        <h2 class="text-3xl font-semibold text-sky-600 mb-4"><strong>Fluxo de Conversação na Plataforma de Chat</strong></h2>
+        <p class="mb-2 text-slate-700">O fluxo completo implementado na plataforma de chat segue o diagrama proposto:</p>
+        <ol class="list-decimal list-inside space-y-2 ml-4 text-slate-700">
+            <li>Cliente inicia contato</li>
+            <li>Sistema verifica se o cliente está em teste grátis:
+                <ul class="list-disc list-inside space-y-1 ml-6 mt-1">
+                    <li><strong>Se sim</strong>: Chama webhook → Envia mensagem → Transfere para setor</li>
+                    <li><strong>Se não</strong>: Envia boas-vindas → Pergunta sobre tipo de atendimento → Transfere conforme resposta</li>
+                </ul>
+            </li>
+        </ol>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="text-3xl font-semibold text-sky-600 mb-4"><strong>Resultado Final</strong></h2>
+        <p class="mb-2 text-slate-700">A integração completa possibilita:</p>
+        <ol class="list-decimal list-inside space-y-1 ml-4 mb-4 text-slate-700">
+            <li>Identificação automática de clientes em teste grátis</li>
+            <li>Registro centralizado em planilha com dados importantes (link, nome e data)</li>
+            <li>Envio de nota no chat informando sobre o registro</li>
+            <li>Confirmação de processamento via webhook response</li>
+            <li>Direcionamento eficiente para os setores adequados</li>
+        </ol>
+        <p class="text-slate-700">Esta implementação atende completamente aos requisitos estabelecidos no desafio técnico, proporcionando uma automação eficiente do processo de atendimento a clientes.</p>
+    </section>
+    <hr class="my-8 border-slate-300">
+
+    <section class="mb-8">
+        <h2 class="text-3xl font-semibold text-sky-600 mb-4"><strong>Fluxograma da Integração</strong></h2>
+        <div class="bg-gray-800 p-4 rounded-lg shadow-md overflow-x-auto">
+        <pre class="hljs bg-gray-800 text-white rounded"><code class="language-mermaid"><div class="mermaid">%% Diagrama de integração Umbler Talk + Make
+flowchart TD
+    subgraph "Umbler Talk"
+        A[Cliente entra em contato] --> B{Cliente está em teste grátis?}
+        B -- Sim --> C[Chama Webhook para o Make]
+        C --> D[Envia mensagem de transferência]
+        D --> E[Transfere para setor]
+        B -- Não --> F[Envia mensagem de boas-vindas]
+        F --> G{Qual atendimento precisa?}
+        G -- Financeiro --> H[Envia mensagem de transferência]
+        H --> I[Transfere para setor Financeiro]
+        G -- Técnico --> J[Envia mensagem de transferência]
+        J --> K[Transfere para setor Técnico]
+    end
+
+    subgraph "Make.com"
+        L[Recebe Webhook] --> M[Registra em uma planilha: link da conversa, data e nome do contato]
+        M --> N[Envia nota no chat avisando do registro]
+        N --> O[Fim]
+    end
+
+    C -. POST com dados do cliente .-> L
+    H -. POST com mensagem .-> N
+    J -. POST com mensagem .-> N
+</div></code></pre>
+        </div>
+        <p class="mt-4 text-slate-700">O fluxograma acima representa de forma visual o processo completo de integração, mostrando claramente:</p>
+        <ol class="list-decimal list-inside space-y-1 ml-4 text-slate-700">
+            <li>O fluxo de decisão na plataforma de chat</li>
+            <li>A etapa de envio de mensagem antes da transferência para o setor</li>
+            <li>O processamento detalhado no Make.com, incluindo a definição da data atual</li>
+            <li>O registro estruturado na planilha Google Sheets</li>
+            <li>O envio da nota de volta para o chat</li>
+            <li>A resposta final do webhook confirmando o processamento</li>
+        </ol>
+    </section>
+
+    <footer class="text-center text-slate-500 text-sm mt-10">
+        <p>&copy; 2024 Guia de Integração. Todos os direitos reservados.</p>
+    </footer>
+</div>
+
+</body>
+</html>

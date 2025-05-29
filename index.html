@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desafio de Engenharia de Suporte - Respostas</title>
+<meta name="description" content="Soluções completas para o Desafio Técnico de Engenharia de Suporte - análise de dados, integrações, diagnósticos e mais.">
+<meta name="keywords" content="engenharia de suporte, análise de dados, umbler talk, make.com, diagnóstico email">
+<meta name="author" content="Engenheiro de Suporte">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Desafio de Engenharia de Suporte">
+<meta property="og:description" content="Soluções completas para o Desafio Técnico de Engenharia de Suporte">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/Umbler_Ico.webp">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Desafio de Engenharia de Suporte">
+<meta name="twitter:description" content="Soluções completas para o Desafio Técnico de Engenharia de Suporte">
+
+<link rel="icon" type="image/webp" href="assets/Umbler_Ico.webp">
+<meta name="theme-color" content="#0ea5e9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="DesafioES">
+
+<!-- Preload Critical Resources -->
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+<link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+<link rel="dns-prefetch" href="https://unpkg.com">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechnicalArticle",
+  "headline": "Desafio de Engenharia de Suporte - Soluções Técnicas",
+  "description": "Soluções completas para o Desafio Técnico de Engenharia de Suporte - análise de dados, integrações, diagnósticos e mais.",
+  "author": {
+    "@type": "Person",
+    "name": "Engenheiro de Suporte"
+  },
+  "datePublished": "2025-05-29",
+  "dateModified": "2025-05-29",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Projeto Técnico"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "index.html"
+  },
+  "articleSection": [
+    "Análise de Dados",
+    "Integração Make.com",
+    "Avaliação de Site",
+    "Diagnóstico de Email"
+  ],
+  "keywords": ["engenharia de suporte", "análise de dados", "umbler talk", "make.com", "diagnóstico email"],
+  "inLanguage": "pt-BR"
+}
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    /* CSS Custom Properties for Enhanced Design System */
+    :root {
+        --primary-color: #0ea5e9;
+        --primary-hover: #0284c7;
+        --accent-color: #7c3aed;
+        --accent-hover: #6d28d9;
+        --surface: #ffffff;
+        --background: #f8fafc;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-radius: 12px;
+        --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-elevated: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+        --gradient-accent: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+    }
+    
+    /* Base Styles */
+    body {
+        font-family: 'Inter', sans-serif;
+        scroll-behavior: smooth;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--background);
+        color: var(--text-primary);
+    }
+    
+    /* Animation Keyframes */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: -200px 0;
+        }
+        100% {
+            background-position: calc(200px + 100%) 0;
+        }
+    }
+
+    @keyframes loading {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes scroll-reveal {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Enhanced Card System */
+    .card {
+        background: var(--surface);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-card);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0,0,0,0.05);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .card:hover::before {
+        left: 100%;
+    }
+
+    .card:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-4px);
+    }
+
+    /* Loading Animation */
+    .loading {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+    
+    /* Enhanced Back to Top Button */
+    .back-to-top {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        opacity: 0;
+        transform: translateY(100px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+        box-shadow: var(--shadow-card);
+    }
+    
+    .back-to-top.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .back-to-top:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-elevated);
+    }
+
+    /* Progress Bar */
+    .progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 3px;
+        background: var(--gradient-primary);
+        z-index: 9999;
+        transition: width 0.3s ease;
+    }
+
+    /* Enhanced Breadcrumb */
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        background: var(--surface);
+        padding: 0.75rem 1rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-card);
+    }
+    
+    .breadcrumb a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+        color: var(--primary-hover);
+    }
+
+    /* Enhanced Headers */
+    h1, h2, h3 {
+        position: relative;
+    }
+
+    h1::after, h2::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--gradient-primary);
+        border-radius: 2px;
+    }
+
+    /* Enhanced Theme Toggle */
+    #theme-toggle {
+        background: var(--surface);
+        box-shadow: var(--shadow-card);
+        transition: all 0.3s ease;
+    }
+
+    #theme-toggle:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-2px);
+    }
+
+    /* Mermaid Diagrams */
+    .mermaid svg {
+        background-color: white !important;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-card);
+    }
+
+    /* Smooth reveal animation for sections */
+    .reveal {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: all 0.6s ease;
+    }
+
+    .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Enhanced Interactive Elements */
+    .interactive-element {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .interactive-element:hover {
+        transform: scale(1.02);
+    }
+
+    /* Enhanced Button Styles */
+    .btn-primary {
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-card);
+    }
+
+    .btn-primary:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-2px);
+    }
+
+    /* Enhanced Navigation */
+    nav {
+        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.95);
+    }
+
+    /* Responsive Enhancements */
+    @media (max-width: 768px) {
+        .back-to-top {
+            bottom: 1rem;
+            right: 1rem;
+            width: 45px;
+            height: 45px;
+        }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    /* Enhanced Loading States */
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: loading 1s ease-in-out infinite;
+    }
+</style>
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 leading-relaxed">
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default'
+    });
+  </script>
+
+    <!-- Loading Animation -->
+    <div id="loading" class="fixed inset-0 bg-white z-50 flex items-center justify-center" role="status" aria-label="Carregando conteúdo">
+        <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-sky-600"></div>
+        <span class="sr-only">Carregando...</span>
+    </div>
+
+<div class="container mx-auto p-6 md:p-10 max-w-4xl bg-white shadow-xl rounded-lg my-10 loading">    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Navegação estrutural">
+        <a href="/" aria-current="false">Início</a>
+        <span aria-hidden="true">></span>
+        <span aria-current="page">Desafio Técnico</span>
+    </nav>    <header class="mb-10 pb-4 border-b border-slate-300">
+        <h1 class="text-4xl font-bold text-sky-700 mb-2">
+            🛠️ Desafio de Engenharia de Suporte
+        </h1>
+        <p class="text-lg text-slate-600">Soluções técnicas completas: Análise de dados, Integrações, Diagnósticos e Automação</p>
+    </header>
+
+    <section class="mb-8">
+        <h2 class="text-3xl font-semibold text-sky-600 mb-4">Introdução</h2>
+        <p class="mb-4 text-slate-700">Este repositório reúne as soluções desenvolvidas para o desafio técnico, abrangendo análise de dados, integração de sistemas, avaliação de site e diagnóstico de e-mail. Cada resposta foi documentada em um arquivo Markdown próprio, com explicações detalhadas, gráficos, fluxogramas e recomendações práticas.</p>
+    </section>
+
+    <hr class="my-8 border-slate-300">
+
+    <section class="mb-8">
+        <h2 class="text-3xl font-semibold text-sky-600 mb-6">Índice das Respostas</h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="card bg-slate-50 p-6 rounded-lg shadow hover:shadow-lg transition-all duration-300 hover:transform hover:-translate-y-1">
+                <h3 class="text-2xl font-medium text-sky-700 mb-3">1. Análise de Dados</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><a href="./html/analise_dados.html" class="text-blue-600 hover:text-blue-800 hover:underline transition-colors">Resposta</a></li>
+                    <li><a href="./scripts/analise_dados_sessao_2.py" class="text-blue-600 hover:text-blue-800 hover:underline">Script Python de análise</a></li>
+                    <li><a href="./assets/data_analysis_flow_sessao_2_analise_dados.webp" class="text-blue-600 hover:text-blue-800 hover:underline">Fluxograma</a></li>
+                </ul>
+            </div>
+
+            <div class="card bg-slate-50 p-6 rounded-lg shadow hover:shadow-lg transition-all duration-300 hover:transform hover:-translate-y-1">
+                <h3 class="text-2xl font-medium text-sky-700 mb-3">2. Integração Umbler Talk + Make</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><a href="./html/utalk_make.html" class="text-blue-600 hover:text-blue-800 hover:underline transition-colors">Resposta</a></li>
+                    <li><a href="./assets/flowchart_.webp" class="text-blue-600 hover:text-blue-800 hover:underline">Fluxograma</a></li>
+                </ul>
+            </div>
+
+            <div class="card bg-slate-50 p-6 rounded-lg shadow hover:shadow-lg transition-all duration-300 hover:transform hover:-translate-y-1">
+                <h3 class="text-2xl font-medium text-sky-700 mb-3">3. Análise do Site</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><a href="./html/site.html" class="text-blue-600 hover:text-blue-800 hover:underline transition-colors">Resposta</a></li>
+                </ul>
+            </div>
+
+            <div class="card bg-slate-50 p-6 rounded-lg shadow hover:shadow-lg transition-all duration-300 hover:transform hover:-translate-y-1">
+                <h3 class="text-2xl font-medium text-sky-700 mb-3">4. Análise de E-mail</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><a href="./html/email.html" class="text-blue-600 hover:text-blue-800 hover:underline transition-colors">Resposta</a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <hr class="my-8 border-slate-300">
+
+    <section class="mb-8">
+        <h2 class="text-3xl font-semibold text-sky-600 mb-4">Conclusão Final</h2>
+        <p class="mb-4 text-slate-700">Este documento apresenta uma visão consolidada das respostas para as quatro sessões do desafio de Engenharia de Suporte, destacando os principais pontos abordados em cada uma delas.</p>
+
+        <div class="space-y-6">
+            <div>
+                <h3 class="text-2xl font-medium text-sky-700 mb-2">Sessão 1: Análise de Dados</h3>
+                <p class="mb-2 text-slate-700">Na primeira sessão, realizei uma análise detalhada do conjunto de dados fornecido, identificando padrões, tendências e métricas importantes. Entre os achados:</p>
+                <ul class="list-disc list-inside space-y-1 ml-4 text-slate-700">
+                    <li>O mês com maior número de incidentes</li>
+                    <li>A mediana do tempo de finalização e de primeira resposta para cards prioritários</li>
+                    <li>O produto com maior recorrência de incidentes</li>
+                    <li>Problemas recorrentes e propostas para mitigação</li>
+                </ul>
+                <p class="mt-2 text-slate-700">A análise foi documentada nos arquivos de análise de dados e demonstrou como métricas bem estabelecidas podem fundamentar decisões estratégicas.</p>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-medium text-sky-700 mb-2">Sessão 2: Umbler Talk</h3>
+                <p class="mb-2 text-slate-700">Na segunda sessão, implementei com sucesso a integração entre o Umbler Talk e o Make.com, criando um fluxo automatizado para:</p>
+                <ul class="list-disc list-inside space-y-1 ml-4 text-slate-700">
+                    <li>Identificar clientes em teste grátis</li>
+                    <li>Registrar dados em planilha (link da conversa, data, nome do contato)</li>
+                    <li>Enviar notas informativas no chat</li>
+                    <li>Direcionar clientes para os setores apropriados</li>
+                </ul>
+                <p class="mt-2 text-slate-700">A solução implementada está documentada nos arquivos de integração e incluiu diagramas de fluxo e código comentado.</p>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-medium text-sky-700 mb-2">Sessão 3: Análise de Site</h3>
+                <p class="mb-2 text-slate-700">A terceira sessão envolveu a análise do site katiane.com.br, identificando problemas e oportunidades de melhoria em várias áreas:</p>
+                <ul class="list-disc list-inside space-y-1 ml-4 text-slate-700">
+                    <li>Performance e otimização</li>
+                    <li>SEO e visibilidade</li>
+                    <li>Segurança e boas práticas</li>
+                    <li>Design e experiência do usuário</li>
+                    <li>Problemas técnicos específicos</li>
+                </ul>
+                <p class="mt-2 text-slate-700">A análise completa está disponível nos arquivos de análise do site, apresentando recomendações detalhadas para cada aspecto analisado.</p>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-medium text-sky-700 mb-2">Sessão 4: Análise de E-mail</h3>
+                <p class="mb-2 text-slate-700">Na quarta e última sessão, analisei quatro casos relacionados a problemas de e-mail:</p>
+                <ol class="list-decimal list-inside space-y-1 ml-4 text-slate-700">
+                    <li><strong>E-mail rejeitado como spam</strong>: Análise de logs de rejeição com foco em problemas de autenticação e configuração.</li>
+                    <li><strong>Configurações inadequadas de filtro de spam</strong>: Avaliação de configurações permissivas que comprometem a segurança.</li>
+                    <li><strong>Logs incompletos</strong>: Exame de logs truncados e suas implicações para diagnóstico.</li>
+                    <li><strong>Filtro de redirecionamento perigoso</strong>: Identificação de grave risco de segurança em regras de redirecionamento.</li>
+                </ol>
+                <p class="mt-2 text-slate-700">A análise detalhada está disponível nos arquivos de análise de e-mail.</p>
+            </div>
+        </div>
+    </section>
+
+    <hr class="my-8 border-slate-300">
+
+    <section class="mb-8">
+        <h3 class="text-2xl font-medium text-sky-700 mb-2">Considerações Finais</h3>
+        <p class="mb-2 text-slate-700">Este desafio proporcionou a oportunidade de demonstrar competências técnicas em um ambiente prático que reflete cenários reais enfrentados na Engenharia de Suporte. Abordei diversos aspectos fundamentais:</p>
+        <ol class="list-decimal list-inside space-y-1 ml-4 text-slate-700">
+            <li><strong>Capacidade analítica</strong>: Através da análise de dados e interpretação de logs</li>
+            <li><strong>Conhecimento técnico</strong>: Na implementação de integrações e diagnóstico de problemas</li>
+            <li><strong>Visão orientada a soluções</strong>: Propondo recomendações práticas e viáveis</li>
+            <li><strong>Documentação clara</strong>: Apresentando as soluções de forma estruturada e compreensível</li>
+        </ol>
+        <p class="mt-2 mb-2 text-slate-700">A abordagem multidisciplinar do desafio permitiu explorar diferentes facetas da Engenharia de Suporte, reforçando a importância de um conhecimento amplo e capacidade de adaptação para resolver diversos tipos de problemas técnicos.</p>
+        <p class="mb-2 text-slate-700">As soluções propostas não apenas resolvem os problemas apresentados, mas também demonstram um entendimento dos princípios fundamentais e das melhores práticas em cada área analisada.</p>
+    </section>
+
+    <hr class="my-8 border-slate-300">
+
+    <footer class="text-center text-slate-500 text-sm">
+        <p>Cada seção foi elaborada para ser consultada de forma independente, mas todas se integram para demonstrar a capacidade de análise, documentação e solução de problemas complexos em Engenharia de Suporte.</p>
+    </footer>
+
+</div>
+
+<!-- Back to Top Button -->
+<button id="back-to-top" 
+        class="back-to-top" 
+        title="Voltar ao topo"
+        aria-label="Voltar ao início da página"
+        aria-hidden="true">
+    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+        <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+    </svg>
+</button>
+
+<script>
+// Loading Animation
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.getElementById('loading').style.display = 'none';
+    }, 800);
+});
+
+// Back to Top Button
+const backToTop = document.getElementById('back-to-top');
+
+window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 300) {
+        backToTop.classList.add('show');
+    } else {
+        backToTop.classList.remove('show');
+    }
+});
+
+backToTop.addEventListener('click', () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+});
+
+// Intersection Observer for animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.animationDelay = Math.random() * 0.3 + 's';
+            entry.target.classList.add('loading');
+        }
+    });
+}, observerOptions);
+
+// Observe all cards
+document.querySelectorAll('.card').forEach(card => {
+    observer.observe(card);
+});
+
+// Progress Bar
+const progressBar = document.createElement('div');
+progressBar.className = 'progress-bar';
+document.body.appendChild(progressBar);
+
+window.addEventListener('scroll', () => {
+    const scrollTop = window.pageYOffset;
+    const docHeight = document.body.offsetHeight - window.innerHeight;
+    const scrollPercent = (scrollTop / docHeight) * 100;
+    progressBar.style.width = scrollPercent + '%';
+});
+
+// Enhanced Scroll Reveal Animation
+const enhancedObserverOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const enhancedObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+        }
+    });
+}, enhancedObserverOptions);
+
+// Observe all sections and elements for reveal animation
+document.querySelectorAll('section, .card, h2, h3').forEach(element => {
+    element.classList.add('reveal');
+    enhancedObserver.observe(element);
+});
+
+// Enhanced Image Loading
+document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+    img.addEventListener('load', () => {
+        img.style.opacity = '1';
+        img.style.transform = 'scale(1)';
+    });
+});
+
+// Google Analytics 4 (Template - replace with actual GA4 measurement ID)
+/*
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'GA_MEASUREMENT_ID', {
+    page_title: 'Desafio de Engenharia de Suporte',
+    page_location: window.location.href
+});
+*/
+
+// Microsoft Clarity (Template - replace with actual project ID)
+/*
+(function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "PROJECT_ID");
+*/
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+                console.log('SW registrado com sucesso:', registration.scope);
+            })
+            .catch((registrationError) => {
+                console.log('SW falhou ao registrar:', registrationError);
+            });
+    });
+}
+</script>
+
+<!-- Google Analytics 4 (Uncomment and replace with actual measurement ID) -->
+<!--
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+-->
+
+<!-- Microsoft Clarity (Uncomment and replace with actual project ID) -->
+<!--
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "PROJECT_ID");
+</script>
+-->
+</script>
+
+</body>
+</html>

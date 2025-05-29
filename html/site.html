@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Site | Desafio Engenharia de Suporte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Visualization & Content Choices: 
+        - Visão Geral: Benefícios esperados (lista HTML estilizada), Gráfico de Barras (Chart.js) para número de problemas por categoria. Goal: Resumo visual e impacto. Interaction: Hover no gráfico. Justification: Visão geral rápida e clara. Library: Chart.js.
+        - Categorias (Performance, SEO, etc.): Listas HTML (ul/li) para Problemas e Recomendações. Goal: Apresentação clara e detalhada. Interaction: Navegação por abas. Justification: Organização e legibilidade.
+        - Mixed Content: Listas HTML para URLs afetadas e soluções. Goal: Detalhamento técnico específico. Justification: Clareza para ação corretiva.
+        - Ícones: Unicode (e.g., ⚠️, 💡, ✅, ❌) para indicadores visuais. Goal: Melhorar a escaneabilidade. Justification: Simples e eficaz sem imagens.
+        - NO SVG graphics used. NO Mermaid JS used. -->    <style>
+        /* CSS Custom Properties for Design System */
+        :root {
+            --primary-color: #0D9488;
+            --primary-hover: #14B8A6;
+            --accent-color: #0F766E;
+            --accent-hover: #0D9488;
+            --surface: #FFFFFF;
+            --background: #F8FAFC;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --border-radius: 12px;
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-elevated: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+        }
+
+        /* Base Styles */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            scroll-behavior: smooth;
+            background: var(--background);
+        }
+
+        /* Animation Keyframes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+
+        @keyframes loading {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes scroll-reveal {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced Tab System */
+        .tab-button.active { 
+            border-color: var(--primary-color); 
+            color: var(--primary-color); 
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            box-shadow: var(--shadow-card);
+            transform: translateY(-2px);
+        }
+        
+        .tab-button { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .tab-button:hover::before {
+            left: 0;
+        }
+
+        .tab-button:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Content Animation */
+        .content-section { 
+            animation: fadeInUp 0.6s ease-out;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .content-section:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        /* Chart Container Enhancement */
+        .chart-container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 600px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            height: 300px; 
+            max-height: 400px;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-card);
+            padding: 1rem;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .chart-container:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        @media (min-width: 768px) { 
+            .chart-container { 
+                height: 350px; 
+            } 
+        }
+
+        /* Enhanced Card System */
+        .card { 
+            background: var(--surface); 
+            border-radius: var(--border-radius); 
+            box-shadow: var(--shadow-card); 
+            padding: 1.5rem; 
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        /* Enhanced List Styles */
+        .problem-list li, .recommendation-list li, .benefit-list li, .url-list li { 
+            padding-left: 1.5rem; 
+            position: relative;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .problem-list li:hover,
+        .recommendation-list li:hover,
+        .benefit-list li:hover,
+        .url-list li:hover {
+            transform: translateX(4px);
+            color: var(--text-primary);
+        }
+
+        .problem-list li::before { 
+            content: '⚠️'; 
+            position: absolute; 
+            left: 0; 
+            color: #f59e0b;
+            animation: pulse 2s infinite;
+        }
+        .recommendation-list li::before { 
+            content: '💡'; 
+            position: absolute; 
+            left: 0; 
+            color: #10b981; 
+        }
+        .benefit-list li::before { 
+            content: '✅'; 
+            position: absolute; 
+            left: 0; 
+            color: #10b981; 
+        }
+        .url-list li::before { 
+            content: '🔗'; 
+            position: absolute; 
+            left: 0; 
+            color: #3b82f6; 
+        }
+
+        /* Enhanced Header */
+        header {
+            background: var(--gradient-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        /* Navigation Enhancement */
+        nav {
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+
+        /* Smooth reveal animation for sections */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--gradient-primary);
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: var(--shadow-card);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            box-shadow: var(--shadow-elevated);
+            transform: translateY(-4px);
+        }
+
+        /* Enhanced Typography */
+        h1, h2, h3 {
+            position: relative;
+        }
+
+        h1::after, h2::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+
+        /* Interactive Elements */
+        .interactive-element {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .interactive-element:hover {
+            transform: scale(1.02);
+        }
+
+        /* Loading States */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: loading 1s ease-in-out infinite;
+        }
+
+        /* Responsive Enhancements */
+        @media (max-width: 768px) {
+            .card {
+                padding: 1rem;
+            }
+            
+            .tab-button {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-gray-800">    <header class="bg-teal-700 text-white p-6 shadow-md">
+        <div class="container mx-auto max-w-5xl">
+            <h1 class="text-3xl font-bold">🌐 Análise de Site katiane.com.br</h1>
+            <p class="text-teal-100">Auditoria técnica completa: Performance, SEO, Segurança e UX</p>
+        </div>
+    </header>
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto max-w-5xl flex space-x-1 p-2 sm:p-0 sm:space-x-2 justify-center flex-wrap">
+            <button data-tab="overview" class="tab-button active text-sm sm:text-base py-2 px-3 sm:py-3 sm:px-6 font-medium text-gray-600 hover:bg-teal-50 border-b-2 border-transparent focus:outline-none">Visão Geral</button>
+            <button data-tab="performance" class="tab-button text-sm sm:text-base py-2 px-3 sm:py-3 sm:px-6 font-medium text-gray-600 hover:bg-teal-50 border-b-2 border-transparent focus:outline-none">Performance</button>
+            <button data-tab="seo" class="tab-button text-sm sm:text-base py-2 px-3 sm:py-3 sm:px-6 font-medium text-gray-600 hover:bg-teal-50 border-b-2 border-transparent focus:outline-none">SEO</button>
+            <button data-tab="security" class="tab-button text-sm sm:text-base py-2 px-3 sm:py-3 sm:px-6 font-medium text-gray-600 hover:bg-teal-50 border-b-2 border-transparent focus:outline-none">Segurança</button>
+            <button data-tab="ux" class="tab-button text-sm sm:text-base py-2 px-3 sm:py-3 sm:px-6 font-medium text-gray-600 hover:bg-teal-50 border-b-2 border-transparent focus:outline-none">Design & UX</button>
+            <button data-tab="technical" class="tab-button text-sm sm:text-base py-2 px-3 sm:py-3 sm:px-6 font-medium text-gray-600 hover:bg-teal-50 border-b-2 border-transparent focus:outline-none">Problemas Técnicos</button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto max-w-5xl p-4 sm:p-6">
+        
+        <section id="overview" class="content-section">
+            <div class="card">
+                <h2 class="text-2xl font-semibold text-teal-700 mb-4">Visão Geral da Análise</h2>
+                <p class="mb-4 text-gray-700">Bem-vindo à análise interativa do site <code class="bg-gray-200 px-1 rounded">katiane.com.br</code>. Esta aplicação resume os principais achados do relatório técnico, focando em problemas identificados e recomendações para otimização. O objetivo é fornecer uma visão clara das áreas que necessitam de atenção para melhorar a performance, segurança, visibilidade e experiência do usuário do site. Utilize as abas acima para navegar pelas diferentes categorias da análise.</p>
+                <p class="mb-6 text-gray-700">A implementação das sugestões contidas neste relatório visa trazer melhorias significativas em diversos aspectos do site.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="card">
+                    <h3 class="text-xl font-semibold text-teal-700 mb-3">Benefícios Esperados</h3>
+                    <p class="mb-4 text-gray-700">A implementação das recomendações resultará em:</p>
+                    <ul class="space-y-2 text-gray-700 benefit-list">
+                        <li><strong>Performance:</strong> Redução do tempo de carregamento em 60-70%.</li>
+                        <li><strong>SEO:</strong> Aumento significativo de visibilidade e tráfego orgânico.</li>
+                        <li><strong>Segurança:</strong> Eliminação de vulnerabilidades conhecidas.</li>
+                        <li><strong>Experiência do usuário:</strong> Maior taxa de conversão e menor taxa de rejeição.</li>
+                        <li><strong>Manutenibilidade:</strong> Estrutura mais robusta e fácil de manter.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="text-xl font-semibold text-teal-700 mb-3">Distribuição de Problemas por Categoria</h3>
+                     <div class="chart-container">
+                        <canvas id="issuesChart"></canvas>
+                    </div>
+                    <p class="mt-2 text-xs text-gray-500 text-center">Este gráfico ilustra o número de problemas identificados em cada categoria principal da análise.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="content-section hidden">
+            <div class="card">
+                <h2 class="text-2xl font-semibold text-teal-700 mb-4">Performance e Otimização</h2>
+                <p class="mb-6 text-gray-700">A performance de um site é crucial para a retenção de usuários e para o ranking em mecanismos de busca. Problemas de lentidão e falta de otimização podem levar a altas taxas de rejeição. Esta seção detalha os problemas de performance encontrados e sugere melhorias para acelerar o site <code class="bg-gray-200 px-1 rounded">katiane.com.br</code>.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-amber-600 mb-3">Problemas Identificados</h3>
+                        <ul class="space-y-2 text-gray-700 problem-list">
+                            <li>Tempo de carregamento excessivo (> 5 segundos).</li>
+                            <li>Imagens não otimizadas.</li>
+                            <li>Scripts e CSS não minificados.</li>
+                            <li>Configuração inadequada de cache.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-emerald-600 mb-3">Recomendações</h3>
+                        <ul class="space-y-2 text-gray-700 recommendation-list">
+                            <li>Otimizar imagens e implementar lazy loading.</li>
+                            <li>Minificar e combinar arquivos CSS/JS.</li>
+                            <li>Configurar sistema de cache adequado.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="seo" class="content-section hidden">
+            <div class="card">
+                <h2 class="text-2xl font-semibold text-teal-700 mb-4">SEO e Visibilidade</h2>
+                <p class="mb-6 text-gray-700">Search Engine Optimization (SEO) é fundamental para garantir que o site seja encontrado por seu público-alvo nos resultados de busca. Problemas de SEO podem limitar drasticamente o tráfego orgânico e a visibilidade online. Aqui, exploramos as deficiências de SEO do site <code class="bg-gray-200 px-1 rounded">katiane.com.br</code> e as ações para corrigi-las.</p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-amber-600 mb-3">Problemas Identificados</h3>
+                        <ul class="space-y-2 text-gray-700 problem-list">
+                            <li>Meta tags ausentes ou incompletas.</li>
+                            <li>Estrutura de URL não amigável.</li>
+                            <li>Ausência de sitemap.xml e dados estruturados.</li>
+                            <li>Conteúdo não otimizado para palavras-chave relevantes.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-emerald-600 mb-3">Recomendações</h3>
+                        <ul class="space-y-2 text-gray-700 recommendation-list">
+                            <li>Otimizar estrutura de SEO (meta tags, URLs, sitemap).</li>
+                            <li>Desenvolver estratégia de conteúdo focada em palavras-chave.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="security" class="content-section hidden">
+            <div class="card">
+                <h2 class="text-2xl font-semibold text-teal-700 mb-4">Segurança e Boas Práticas</h2>
+                <p class="mb-6 text-gray-700">A segurança do site protege tanto os dados da empresa quanto dos seus usuários. Vulnerabilidades podem levar a perdas financeiras, danos à reputação e desconfiança. Esta seção aborda as falhas de segurança e as más práticas identificadas no site <code class="bg-gray-200 px-1 rounded">katiane.com.br</code>, com recomendações para fortalecer suas defesas.</p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-amber-600 mb-3">Problemas Identificados</h3>
+                        <ul class="space-y-2 text-gray-700 problem-list">
+                            <li>WordPress e plugins desatualizados.</li>
+                            <li>Ausência de SSL/HTTPS.</li>
+                            <li>Configurações de segurança inadequadas.</li>
+                            <li>Informações sensíveis expostas.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-emerald-600 mb-3">Recomendações</h3>
+                        <ul class="space-y-2 text-gray-700 recommendation-list">
+                            <li>Atualizar WordPress, plugins e PHP para versões mais recentes.</li>
+                            <li>Implementar SSL/HTTPS em todo o site.</li>
+                            <li>Configurar backup automatizado e robusto.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ux" class="content-section hidden">
+            <div class="card">
+                <h2 class="text-2xl font-semibold text-teal-700 mb-4">Design e Experiência do Usuário (UX)</h2>
+                <p class="mb-6 text-gray-700">Um bom design e uma experiência de usuário intuitiva são essenciais para engajar visitantes e guiá-los aos seus objetivos. Problemas de usabilidade, design antiquado ou navegação confusa podem frustrar usuários e aumentar a taxa de rejeição. Analisamos aqui os aspectos de design e UX do site <code class="bg-gray-200 px-1 rounded">katiane.com.br</code> que precisam de melhorias.</p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-amber-600 mb-3">Problemas Identificados</h3>
+                        <ul class="space-y-2 text-gray-700 problem-list">
+                            <li>Design antiquado e inconsistente.</li>
+                            <li>Experiência mobile deficiente.</li>
+                            <li>Problemas de usabilidade e navegação confusa.</li>
+                            <li>Acessibilidade comprometida.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-emerald-600 mb-3">Recomendações</h3>
+                        <ul class="space-y-2 text-gray-700 recommendation-list">
+                            <li>Implementar design responsivo e moderno.</li>
+                            <li>Melhorar acessibilidade (contraste, navegação por teclado, etc.).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="technical" class="content-section hidden">
+            <div class="card">
+                 <h2 class="text-2xl font-semibold text-teal-700 mb-4">Problemas Técnicos Específicos</h2>
+                <p class="mb-6 text-gray-700">Além das categorias gerais, alguns problemas técnicos específicos podem impactar o funcionamento e a percepção do site. Esta seção detalha erros pontuais, conflitos e a importante questão do conteúdo misto (Mixed Content) identificada no site <code class="bg-gray-200 px-1 rounded">katiane.com.br</code>.</p>
+
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold text-amber-600 mb-3">Problemas Técnicos Gerais</h3>
+                     <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <ul class="space-y-2 text-gray-700 problem-list">
+                                <li>Erros 404 em páginas importantes.</li>
+                                <li>Conflitos entre plugins.</li>
+                                <li>Problemas de banco de dados.</li>
+                                <li>Código personalizado problemático.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-emerald-600 mb-2">Recomendações Gerais</h4>
+                            <ul class="space-y-2 text-gray-700 recommendation-list">
+                                <li>Corrigir erros 404 e links quebrados.</li>
+                                <li>Resolver conflitos de plugins.</li>
+                                <li>Otimizar banco de dados e configurações do servidor.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-semibold text-red-600 mb-3">Problema de Mixed Content (Conteúdo Misto)</h3>
+                    <p class="mb-3 text-gray-700">Foi identificado que o site carrega alguns recursos (como folhas de estilo CSS) via HTTP mesmo quando acessado por HTTPS. Isso resulta em bloqueio desses recursos pelos navegadores, prejudicando o layout e a segurança.</p>
+                    
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Exemplos de URLs Afetadas:</h4>
+                    <ul class="space-y-1 text-sm text-gray-600 mb-4 pl-4 url-list">
+                        <li><code class="bg-gray-100 p-1 rounded text-xs">http://katiane-com-br.umbler.net/wp-content/themes/silverstorm//resources/theme/extras.css?ver=1.0.14</code></li>
+                        <li><code class="bg-gray-100 p-1 rounded text-xs">http://katiane-com-br.umbler.net/wp-content/plugins/gutenberg/build/block-library/style.css?ver=20.7.0</code></li>
+                        <li><code class="bg-gray-100 p-1 rounded text-xs">http://katiane-com-br.umbler.net/wp-content/plugins/colibri-page-builder/extend-builder/assets/static/fancybox/jquery.fancybox.min.css?ver=1.0.332</code></li>
+                        <li><code class="bg-gray-100 p-1 rounded text-xs">http://katiane-com-br.umbler.net/wp-content/plugins/colibri-page-builder/extend-builder/assets/static/css/theme.css?ver=1.0.332</code></li>
+                    </ul>
+
+                    <h4 class="text-lg font-semibold text-emerald-600 mb-2">Como Resolver:</h4>
+                    <ul class="space-y-2 text-gray-700 mb-4 recommendation-list">
+                        <li>Atualizar todos os links de recursos para HTTPS.</li>
+                        <li>Forçar HTTPS nas configurações do WordPress e do servidor.</li>
+                        <li>Utilizar plugins de SSL para garantir que todo o conteúdo seja servido de forma segura.</li>
+                    </ul>
+
+                    <h4 class="text-lg font-semibold text-emerald-600 mb-2">Benefícios da Correção:</h4>
+                    <ul class="space-y-2 text-gray-700 benefit-list">
+                        <li>Eliminação de avisos de segurança no navegador.</li>
+                        <li>Garantia de que todo o conteúdo do site será carregado corretamente.</li>
+                        <li>Melhoria da reputação e confiança do usuário.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card mt-6">
+                 <h3 class="text-xl font-semibold text-teal-700 mb-3">Recomendações Gerais Adicionais</h3>
+                 <p class="mb-4 text-gray-700">Além das correções específicas, as seguintes práticas são recomendadas para a manutenção e melhoria contínua do site:</p>
+                 <ul class="space-y-2 text-gray-700 recommendation-list grid sm:grid-cols-2 gap-x-4">
+                    <li>Atualizar WordPress, plugins e PHP regularmente.</li>
+                    <li>Implementar SSL/HTTPS (reforço).</li>
+                    <li>Corrigir erros 404 e links quebrados (reforço).</li>
+                    <li>Configurar backup automatizado (reforço).</li>
+                    <li>Otimizar imagens e implementar lazy loading (reforço).</li>
+                    <li>Minificar e combinar arquivos CSS/JS (reforço).</li>
+                    <li>Configurar sistema de cache adequado (reforço).</li>
+                    <li>Resolver conflitos de plugins (reforço).</li>
+                    <li>Implementar design responsivo e moderno (reforço).</li>
+                    <li>Otimizar estrutura de SEO (reforço).</li>
+                    <li>Melhorar acessibilidade (reforço).</li>
+                    <li>Otimizar banco de dados e configurações do servidor (reforço).</li>
+                    <li>Desenvolver estratégia de conteúdo (reforço).</li>
+                    <li>Implementar monitoramento e manutenção regular.</li>
+                    <li>Realizar testes de usabilidade com usuários reais.</li>
+                    <li>Otimizar continuamente com base em analytics.</li>
+                 </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-300 text-center p-6 mt-10">
+        <p>&copy; <span id="currentYear"></span> Análise Interativa. Baseado no relatório técnico para katiane.com.br.</p>
+    </footer>
+
+    <script>
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.dataset.tab;
+
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+
+                contentSections.forEach(section => {
+                    if (section.id === tabId) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const reportData = {
+            performance: { problems: 4, recommendations: 3 },
+            seo: { problems: 4, recommendations: 2 },
+            security: { problems: 4, recommendations: 3 },
+            ux: { problems: 4, recommendations: 2 },
+            technical: { problems: 4 + 1 /* mixed content */, recommendations: 3 + 3 /* mixed content solutions */ }
+        };
+
+        const ctx = document.getElementById('issuesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Performance', 'SEO', 'Segurança', 'Design & UX', 'Técnicos'],
+                datasets: [{
+                    label: 'Nº de Problemas Identificados',
+                    data: [
+                        reportData.performance.problems, 
+                        reportData.seo.problems, 
+                        reportData.security.problems, 
+                        reportData.ux.problems, 
+                        reportData.technical.problems
+                    ],
+                    backgroundColor: [
+                        'rgba(245, 158, 11, 0.6)', // amber-500
+                        'rgba(234, 179, 8, 0.6)',  // yellow-500
+                        'rgba(239, 68, 68, 0.6)',  // red-500
+                        'rgba(168, 85, 247, 0.6)', // purple-500
+                        'rgba(99, 102, 241, 0.6)'  // indigo-500
+                    ],
+                    borderColor: [
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(234, 179, 8, 1)',
+                        'rgba(239, 68, 68, 1)',
+                        'rgba(168, 85, 247, 1)',
+                        'rgba(99, 102, 241, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        title: {
+                            display: true,
+                            text: 'Quantidade de Problemas'
+                        }
+                    },
+                    x: {
+                         title: {
+                            display: true,
+                            text: 'Categorias da Análise'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y;
+                                }
+                                return label;
+                            }
+                        }
+                    }                }
+            }
+        });
+
+        // Progress Bar
+        const progressBar = document.createElement('div');
+        progressBar.className = 'progress-bar';
+        document.body.appendChild(progressBar);
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.offsetHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            progressBar.style.width = scrollPercent + '%';
+        });
+
+        // Back to Top Button
+        const backToTopBtn = document.createElement('button');
+        backToTopBtn.innerHTML = '↑';
+        backToTopBtn.className = 'back-to-top';
+        backToTopBtn.setAttribute('aria-label', 'Voltar ao topo');
+        document.body.appendChild(backToTopBtn);
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Scroll Reveal Animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and content sections
+        document.querySelectorAll('.card, .content-section').forEach(element => {
+            element.classList.add('reveal');
+            observer.observe(element);
+        });
+
+        // Enhanced Image Loading
+        document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+            img.addEventListener('load', () => {
+                img.style.opacity = '1';
+            });
+        });
+
+        // Google Analytics 4 (Template - replace with actual GA4 measurement ID)
+        /*
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID');
+        */
+    </script>
+
+    <!-- Google Analytics 4 (Uncomment and replace with actual measurement ID) -->
+    <!--
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    -->
+
+    <!-- Microsoft Clarity (Uncomment and replace with actual project ID) -->
+    <!--
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "PROJECT_ID");
+    </script>
+    -->
+</body>
+</html>
