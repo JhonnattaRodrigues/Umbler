@@ -1,0 +1,72 @@
+---
+id: 1544ac60-13c2-4fc4-a06f-219e4366dad0
+---
+graph TD
+    %% Definição de estilos para melhor visualização
+    classDef inicio fill:#4CAF50,stroke:#333,stroke-width:2px,color:white,font-weight:bold
+    classDef fase fill:#2196F3,stroke:#333,stroke-width:2px,color:white,font-weight:bold
+    classDef analise fill:#FF9800,stroke:#333,stroke-width:2px,color:white,font-weight:bold
+    classDef metodo fill:#FFEB3B,stroke:#888,stroke-width:1px,color:#333
+    classDef processamento fill:#E1F5FE,stroke:#888,stroke-width:1px,color:#333
+    classDef resultado fill:#B39DDB,stroke:#888,stroke-width:1px,color:#333
+    classDef visual fill:#E6E6FA,stroke:#888,stroke-width:1px,color:#333
+    classDef acao fill:#DDDDDD,stroke:#333,stroke-width:1px,color:#333,font-style:italic
+    classDef decisao fill:#FFD700,stroke:#333,stroke-width:2px,color:#333
+    classDef fim fill:#4CAF50,stroke:#333,stroke-width:2px,color:white,font-weight:bold
+
+    %% Início do fluxo de análise - Focado na seção 2 do documento RESPOSTA
+    START([Início da Análise<br>Seção 2 - Análise de Dados]):::inicio --> DADOS[Obtenção do Dataset<br>DataSet SE - Via Google API]:::fase
+    
+    %% Etapa de preparação dos dados
+    DADOS --> PREPARA["Preparação dos Dados:<br>1. Limpar nomes de colunas<br>2. Converter datas para datetime<br>3. Converter valores numéricos<br>4. Tratar valores ausentes"]:::fase
+    
+    %% Ramificação para as 5 análises específicas da seção 2
+    PREPARA --> ANALISE["Ramificação em 5 Análises<br>Seção 2.1 - 2.5"]:::fase
+    
+    %% Análise 1 - Mês com mais incidentes
+    ANALISE --> Q1["2.1 Mês com mais incidentes"]:::analise
+    Q1 --> Q1M["Metodologia:<br>Agrupar por mês/ano e contar incidentes"]:::metodo
+    Q1M --> Q1R["Resultado:<br>Junho 2024 - 117 incidentes<br>(+36% em relação a maio)"]:::resultado
+    Q1R --> Q1V["Visualização:<br>Gráfico de incidentes por mês"]:::visual
+    Q1V --> Q1I["Implicação:<br>Investigar causas do aumento<br>para mitigar problemas futuros"]:::acao
+    
+    %% Análise 2 - Mediana do tempo de finalização
+    ANALISE --> Q2["2.2 Mediana do tempo de finalização"]:::analise
+    Q2 --> Q2M["Metodologia:<br>1. Ordenar tempos de finalização<br>2. Remover outliers (método IQR)<br>3. Calcular mediana"]:::metodo
+    Q2M --> Q2R["Resultado:<br>78.71 horas"]:::resultado
+    Q2R --> Q2V["Visualização:<br>Histograma de distribuição<br>dos tempos de finalização"]:::visual
+    Q2V --> Q2I["Implicação:<br>Usar como benchmark para<br>avaliar eficiência operacional"]:::acao
+    
+    %% Análise 3 - Mediana do tempo de primeira resposta
+    ANALISE --> Q3["2.3 Mediana do tempo de<br>primeira resposta (prioritários)"]:::analise
+    Q3 --> Q3M["Metodologia:<br>1. Filtrar cards prioritários (TRUE)<br>2. Calcular mediana do tempo<br>de primeira resposta"]:::metodo
+    Q3M --> Q3R["Resultado:<br>10.03 horas"]:::resultado
+    Q3R --> Q3I["Implicação:<br>Avaliar alocação de recursos<br>para atendimento prioritário"]:::acao
+    
+    %% Análise 4 - Produto com mais incidentes
+    ANALISE --> Q4["2.4 Produto com mais incidentes"]:::analise
+    Q4 --> Q4M["Metodologia:<br>1. Agrupar por produto<br>2. Contar ocorrências<br>3. Calcular percentual"]:::metodo
+    Q4M --> Q4R["Resultado:<br>SmarterMail Umbler - 38 incidentes<br>(18,72% do total)"]:::resultado
+    Q4R --> Q4V["Visualização:<br>Gráfico de barras da distribuição<br>de incidentes por produto"]:::visual
+    Q4V --> Q4I["Implicação:<br>Priorizar melhorias no produto<br>com mais incidentes"]:::acao
+    
+    %% Análise 5 - Problema mais recorrente
+    ANALISE --> Q5["2.5 Problema mais recorrente"]:::analise
+    Q5 --> Q5M["Metodologia:<br>1. Agrupar por motivo do card<br>2. Identificar maior frequência"]:::metodo
+    Q5M --> Q5R["Resultado:<br>Cliente Bloqueado por envio de Spam, com 10 ocorrências"]:::resultado
+    Q5R --> Q5I["Implicação:<br>Implementar SPF/DKIM/DMARC e<br>melhorar orientações aos clientes"]:::acao
+    
+    %% Conclusão da análise
+    Q1I & Q2I & Q3I & Q4I & Q5I --> INSIGHTS["Seção 2.6:<br>Importância da análise de dados<br>e sugestões adicionais"]:::fase
+    INSIGHTS --> CONC1["Conclusão 1:<br>Dados ajudam a identificar<br>padrões e tendências"]:::resultado
+    INSIGHTS --> CONC2["Conclusão 2:<br>Métricas guiam decisões<br>sobre alocação de recursos"]:::resultado
+    INSIGHTS --> CONC3["Conclusão 3:<br>Análises preditivas podem<br>antecipar problemas futuros"]:::resultado
+    
+    %% Documentação
+    CONC1 & CONC2 & CONC3 --> DOC["Documentação Final:<br>Seção 2 do documento RESPOSTA<br>e arquivo explanativo detalhado"]:::fim
+    
+    %% Conexões para os arquivos de saída reais
+    DOC -.-> GRAF1["../assets/grafico_incidentes_por_mes_sessao_2.png"]:::visual
+    DOC -.-> GRAF2["../assets/grafico_distribuicao_produtos_sessao_2.png"]:::visual
+    DOC -.-> GRAF3["../assets/grafico_tempo_finalizacao_sessao_2.png"]:::visual
+    DOC -.-> TEXTO["resultados_analise.txt"]:::visual
