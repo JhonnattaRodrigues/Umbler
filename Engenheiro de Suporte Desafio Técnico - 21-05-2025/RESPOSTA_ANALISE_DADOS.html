@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>RESPOSTA_ANALISE_DADOS.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="an%C3%A1lise-de-dados---documento-explicativo"><strong>Análise de Dados - Documento Explicativo</strong></h1>
+<p>Este documento detalha, de forma didática e estruturada, as análises realizadas na seção &quot;2. Análise de Dados&quot; do desafio técnico de Engenharia de Suporte. Apresenta, de forma detalhada e reflexiva, os comentários e explicações sobre cada etapa da análise de dados realizada, contextualizando as decisões, justificando as metodologias e destacando os principais aprendizados e implicações extraídos dos dados. Para cada questão, são explicitadas a metodologia empregada, os resultados obtidos, as conclusões e as visualizações geradas pelo script Python.</p>
+<hr>
+<h2 id="21-m%C3%AAs-com-maior-n%C3%BAmero-de-incidentes"><strong>2.1. Mês com Maior Número de Incidentes</strong></h2>
+<h3 id="metodologia"><strong>Metodologia</strong></h3>
+<p>A análise foi conduzida a partir da coluna &quot;Data de Abertura do Card&quot;. Todas as datas presentes no dataset bruto foram consideradas válidas para análise temporal e recorrência, sem exclusão de registros por suposta invalidez ou inconsistência de preenchimento. As datas foram convertidas para o formato mês/ano, permitindo o agrupamento dos incidentes por período. Em seguida, foi realizada a contagem de incidentes para cada mês, identificando o mês com maior volume. O percentual de variação em relação ao mês anterior pode ser calculado para contextualizar o resultado.</p>
+<h3 id="resultados"><strong>Resultados</strong></h3>
+<ul>
+<li><strong>Mês com maior número de incidentes:</strong> junho de 2024, com 117 incidentes.</li>
+<li><strong>Variação:</strong> +36% em relação a maio.</li>
+<li><strong>Tendência:</strong> Não foi identificada uma tendência clara de crescimento ou queda ao longo dos meses, mas há sazonalidade pontual.</li>
+<li><strong>Outliers:</strong> Meses com valores muito acima da média (exemplo: &gt;2x média dos demais) são destacados como outliers sazonais.</li>
+<li><strong>Benchmarking:</strong> Comparar o pico de incidentes com médias históricas e benchmarks do setor pode indicar se o volume está dentro do esperado.</li>
+<li><strong>Limitações:</strong> Não foram removidos outliers nesta análise, pois todas as datas foram consideradas válidas. Possível impacto de eventos pontuais não identificados.</li>
+</ul>
+<p><strong>Gráfico:</strong>
+<img src="./grafico_incidentes_por_mes_sessao_2.png" alt="Gráfico de Incidentes por Mês"></p>
+<p><strong>Legenda detalhada:</strong></p>
+<ul>
+<li>Vermelho: mês com maior número de incidentes (destaque para o maior valor do período).</li>
+<li>Azul: demais meses analisados.</li>
+<li>Linha tracejada verde: valor médio de incidentes no período.</li>
+<li>Anotação em vermelho: indica o valor máximo e o mês correspondente.</li>
+<li>Acessibilidade: cores contrastantes, fonte ampliada, legenda e caixa de texto explicativa no gráfico.</li>
+</ul>
+<h3 id="acessibilidade-visual"><strong>Acessibilidade Visual</strong></h3>
+<p>O gráfico utiliza cores contrastantes, legendas e títulos claros, facilitando a leitura inclusive para pessoas com daltonismo. Todos os meses são exibidos, mesmo sem incidentes, garantindo acessibilidade e completude visual.</p>
+<h3 id="conclus%C3%A3o-exemplos-pr%C3%A1ticos-e-a%C3%A7%C3%B5es"><strong>Conclusão, Exemplos Práticos e Ações</strong></h3>
+<p>O aumento em junho de 2024 pode indicar sazonalidade, mudanças operacionais ou eventos externos que impactaram o suporte. Recomenda-se investigar as causas desse aumento, comparar com benchmarks do setor e criar alertas para meses com crescimento atípico. Sugere-se a criação de dashboards interativos para monitoramento contínuo e comparação com benchmarks do setor.</p>
+<hr>
+<h2 id="22-mediana-do-tempo-de-finaliza%C3%A7%C3%A3o"><strong>2.2. Mediana do Tempo de Finalização</strong></h2>
+<h3 id="metodologia"><strong>Metodologia</strong></h3>
+<p>Os tempos registrados na coluna &quot;Tempo até o card ser finalizado (h)&quot; foram convertidos para valores numéricos. Para garantir maior precisão, valores extremos (outliers) foram removidos utilizando o método IQR (Interquartile Range). A mediana foi calculada como a métrica central, por ser menos sensível a valores extremos. Além disso, foi gerado um gráfico de distribuição para visualizar a dispersão dos tempos de finalização.</p>
+<h3 id="resultados"><strong>Resultados</strong></h3>
+<ul>
+<li><strong>Mediana do tempo de finalização:</strong> 78.71 horas.</li>
+<li><strong>Outliers removidos:</strong> 8 registros acima de 300 horas foram considerados outliers e removidos.</li>
+<li><strong>Tendência:</strong> A maioria dos incidentes é resolvida em até 100 horas, com poucos casos extremos.</li>
+<li><strong>Benchmarking:</strong> A mediana pode ser comparada com o benchmark do setor (ex: 72 horas) para avaliar eficiência.</li>
+<li><strong>Limitações:</strong> Possíveis vieses por preenchimento incorreto de tempo de finalização. Valores ausentes ou inconsistentes podem afetar a análise.</li>
+</ul>
+<p><strong>Gráfico:</strong>
+<img src="./grafico_tempo_finalizacao_sessao_2.png" alt="Gráfico de Distribuição do Tempo de Finalização"></p>
+<p><strong>Legenda detalhada:</strong></p>
+<ul>
+<li>Linha vermelha tracejada: mediana do tempo de finalização.</li>
+<li>Linha verde: média do tempo de finalização (deslocada).</li>
+<li>Outliers removidos previamente (não aparecem no gráfico).</li>
+<li>Caixa de texto: reforça acessibilidade e destaca a mediana e desvio padrão.</li>
+<li>Cores contrastantes e fonte ampliada para facilitar leitura.</li>
+</ul>
+<h3 id="acessibilidade-visual"><strong>Acessibilidade Visual</strong></h3>
+<p>O histograma utiliza cores acessíveis, legendas e marcação clara da mediana. Outliers são destacados em cor diferenciada, facilitando a identificação visual.</p>
+<h3 id="conclus%C3%A3o-exemplos-pr%C3%A1ticos-e-a%C3%A7%C3%B5es"><strong>Conclusão, Exemplos Práticos e Ações</strong></h3>
+<p>A mediana de 78.71 horas reflete o tempo típico de finalização dos cards, excluindo valores atípicos. Incidentes com mais de 300 horas devem ser analisados individualmente para identificar gargalos e causas-raiz. Recomenda-se:</p>
+<ul>
+<li>Investigar detalhadamente os incidentes com tempos de finalização muito altos;</li>
+<li>Revisar processos, fluxos de comunicação e critérios de priorização;</li>
+<li>Promover treinamentos para equipes com maior incidência de casos extremos;</li>
+<li>Comparar a mediana com benchmarks do setor e criar alertas automáticos para casos que ultrapassem o limite esperado;</li>
+<li>Automatizar o monitoramento desses indicadores para ação proativa;</li>
+<li>Documentar aprendizados e ajustar políticas internas conforme padrões identificados.</li>
+</ul>
+<hr>
+<h2 id="23-mediana-do-tempo-de-primeira-resposta-cards-priorit%C3%A1rios"><strong>2.3. Mediana do Tempo de Primeira Resposta (Cards Prioritários)</strong></h2>
+<h3 id="metodologia"><strong>Metodologia</strong></h3>
+<p>Os dados foram filtrados para considerar apenas os cards marcados como prioritários (valor &quot;TRUE&quot; na coluna &quot;Prioridade&quot;). A mediana foi calculada com base nos tempos registrados na coluna &quot;Tempo de primeira resposta ao card (h)&quot;, garantindo uma análise focada nos casos críticos.</p>
+<h3 id="resultados"><strong>Resultados</strong></h3>
+<ul>
+<li><strong>Mediana do tempo de primeira resposta:</strong> 10.03 horas.</li>
+<li><strong>Tendência:</strong> A maioria dos cards prioritários recebe resposta em até 12 horas.</li>
+<li><strong>Outliers:</strong> Casos com tempo de resposta acima de 24 horas podem ser considerados outliers (exemplo: card #88 com 36 horas).</li>
+<li><strong>Benchmarking:</strong> O tempo de resposta pode ser comparado com o benchmark do setor (ex: 8 horas para casos críticos).</li>
+<li><strong>Limitações:</strong> Possível subnotificação de prioridade ou preenchimento inconsistente. Valores ausentes podem distorcer a análise.</li>
+</ul>
+<p><strong>Gráfico:</strong>
+<img src="./grafico_proporcao_prioridade_sessao_2.png" alt="Gráfico de Proporção de Prioridade dos Cards"></p>
+<p><strong>Legenda detalhada:</strong></p>
+<ul>
+<li>Verde claro: cards Prioritários.</li>
+<li>Cinza: cards Não Prioritários.</li>
+<li>Caixa de texto: explica acessibilidade e significado das fatias.</li>
+<li>Fonte ampliada e contraste para leitura facilitada.</li>
+</ul>
+<h3 id="acessibilidade-visual"><strong>Acessibilidade Visual</strong></h3>
+<p>O gráfico utiliza cores contrastantes para diferenciar cards Prioritários e Não Prioritários, com legendas claras e acessíveis. Os rótulos exibem explicitamente &quot;Prioritário&quot; e &quot;Não Prioritário&quot;.</p>
+<h3 id="conclus%C3%A3o-exemplos-pr%C3%A1ticos-e-a%C3%A7%C3%B5es"><strong>Conclusão, Exemplos Práticos e Ações</strong></h3>
+<p>A mediana de 10.03 horas para os cards prioritários indica um tempo de resposta eficiente para incidentes críticos, mas casos acima de 24 horas (ex: card #88) devem ser analisados individualmente. Recomenda-se monitorar esse indicador, revisar a priorização e a alocação de recursos, e criar alertas automáticos para casos que ultrapassem o benchmark do setor.</p>
+<hr>
+<h2 id="24-produto-com-maior-recorr%C3%AAncia-de-incidentes"><strong>2.4. Produto com Maior Recorrência de Incidentes</strong></h2>
+<h3 id="metodologia"><strong>Metodologia</strong></h3>
+<p>Os dados da coluna &quot;Produto&quot; foram analisados para identificar o produto com o maior número de incidentes. A contagem de incidentes foi calculada para cada produto, e o produto com a maior contagem foi destacado. Todos os registros do dataset bruto foram considerados para esta análise, exceto aqueles em que o campo está realmente em branco.</p>
+<h3 id="resultados"><strong>Resultados</strong></h3>
+<ul>
+<li><strong>Produto com maior recorrência de incidentes:</strong> SmarterMail Umbler, com 38 incidentes (18,72% do total).</li>
+<li><strong>Tendência:</strong> O produto lidera o ranking de incidentes de forma consistente nos últimos meses.</li>
+<li><strong>Outliers:</strong> Produtos com número de incidentes muito acima da média (ex: SmarterMail Umbler com 38, enquanto a média dos demais é 10) podem indicar foco de problemas.</li>
+<li><strong>Benchmarking:</strong> Comparar a incidência com benchmarks do setor ou com outros produtos internos.</li>
+<li><strong>Limitações:</strong> Possível concentração de incidentes por base de clientes maior ou uso mais intenso. Dados ausentes podem afetar a análise.</li>
+</ul>
+<p><strong>Gráfico:</strong>
+<img src="./grafico_distribuicao_produtos_sessao_2.png" alt="Gráfico de Distribuição de Incidentes por Produto"></p>
+<p><strong>Legenda detalhada:</strong></p>
+<ul>
+<li>Verde: todos os produtos (a barra mais alta indica o produto com mais incidentes).</li>
+<li>Anotações numéricas no topo de cada barra indicam a quantidade de incidentes.</li>
+<li>Caixa de texto: reforça acessibilidade visual.</li>
+</ul>
+<h3 id="acessibilidade-visual"><strong>Acessibilidade Visual</strong></h3>
+<p>O gráfico de barras utiliza cores acessíveis, legendas e títulos claros. Produtos com maior incidência são destacados para facilitar a identificação.</p>
+<h3 id="conclus%C3%A3o-exemplos-pr%C3%A1ticos-e-a%C3%A7%C3%B5es"><strong>Conclusão, Exemplos Práticos e Ações</strong></h3>
+<p>O SmarterMail Umbler apresentou o maior número de incidentes, representando quase 19% do total. Por exemplo, se a média dos demais produtos é 10 incidentes, o SmarterMail Umbler é um outlier positivo. Recomenda-se análise detalhada dos principais problemas enfrentados pelos usuários deste produto, priorizar ações corretivas e promover treinamentos específicos para a equipe de suporte. Sugere-se segmentar a análise por perfil de cliente e reincidência, além de comparar com benchmarks do setor.</p>
+<hr>
+<h2 id="25-problema-mais-recorrente-e-sugest%C3%A3o-de-melhoria"><strong>2.5. Problema Mais Recorrente e Sugestão de Melhoria</strong></h2>
+<h3 id="metodologia"><strong>Metodologia</strong></h3>
+<p>Os dados da coluna &quot;Motivo do Card&quot; foram analisados para identificar o problema mais recorrente. Foi realizada a contagem de ocorrências para cada motivo, destacando o de maior frequência. O top 5 motivos também foi visualizado para contextualizar a recorrência dos principais problemas. Todos os registros do dataset bruto foram considerados para esta análise, exceto aqueles em que o campo está realmente em branco.</p>
+<h3 id="resultados"><strong>Resultados</strong></h3>
+<ul>
+<li><strong>Problema mais recorrente:</strong> Cliente Bloqueado por envio de Spam, com 10 ocorrências.</li>
+<li><strong>Tendência:</strong> O motivo se mantém entre os principais ao longo dos meses.</li>
+<li><strong>Outliers:</strong> Motivos com frequência muito acima dos demais (ex: 10 ocorrências vs. média de 3) podem indicar foco de atenção.</li>
+<li><strong>Benchmarking:</strong> Comparar a incidência do motivo com benchmarks do setor pode indicar se o problema é recorrente apenas internamente ou é tendência geral.</li>
+<li><strong>Limitações:</strong> Possível subnotificação por categorização genérica de motivos. Dados ausentes podem distorcer a análise.</li>
+</ul>
+<p><strong>Gráfico:</strong>
+<img src="./grafico_top5_motivos_sessao_2.png" alt="Gráfico Top 5 Motivos dos Cards"></p>
+<p><strong>Legenda detalhada:</strong></p>
+<ul>
+<li>Roxo: todos os motivos (não há diferenciação de cor para outlier, apenas destaque visual pela altura da barra).</li>
+<li>Anotações numéricas no topo de cada barra indicam a quantidade de ocorrências.</li>
+<li>Caixa de texto: reforça acessibilidade visual e diferenciação de cores.</li>
+</ul>
+<h3 id="acessibilidade-visual"><strong>Acessibilidade Visual</strong></h3>
+<p>O gráfico utiliza cor roxa para todos os motivos, com contraste e fonte ampliada. O motivo mais recorrente é destacado pela altura da barra e anotação numérica.</p>
+<h3 id="conclus%C3%A3o-exemplos-pr%C3%A1ticos-e-a%C3%A7%C3%B5es"><strong>Conclusão, Exemplos Práticos e Ações</strong></h3>
+<p>O bloqueio por envio de spam é o principal motivo de abertura de cards, sendo um outlier em relação aos demais motivos. Por exemplo, se o segundo motivo tem apenas 4 ocorrências, a diferença é significativa. Recomenda-se implementar políticas mais rigorosas de autenticação de e-mails (SPF, DKIM, DMARC), orientar os clientes sobre boas práticas e criar alertas preventivos. Sugere-se comparar a incidência com benchmarks do setor e monitorar reincidências por cliente.</p>
+<hr>
+<h2 id="26-import%C3%A2ncia-da-an%C3%A1lise-de-dados-e-sugest%C3%B5es-adicionais"><strong>2.6. Importância da Análise de Dados e Sugestões Adicionais</strong></h2>
+<h3 id="reflex%C3%A3o-e-recomenda%C3%A7%C3%B5es-sem-gr%C3%A1fico">Reflexão e recomendações (sem gráfico)</h3>
+<p>Compreender quais produtos concentram mais incidentes, quais períodos apresentam picos e como está o tempo de atendimento é fundamental para:</p>
+<ul>
+<li>Direcionar esforços de melhoria e treinamento;</li>
+<li>Antecipar demandas e preparar a equipe para sazonalidades;</li>
+<li>Identificar gargalos e oportunidades de automação;</li>
+<li>Definir benchmarks realistas e acompanhar evolução;</li>
+<li>Embasar decisões estratégicas de negócio e priorização de recursos.</li>
+</ul>
+<p><strong>Outras informações que sugeriria coletar:</strong></p>
+<ul>
+<li>Reincidência de incidentes por cliente (clientes que mais abrem chamados);</li>
+<li>Tempo médio em cada status do fluxo (ex: Waiting CS, Em Atendimento, etc.);</li>
+<li>Satisfação do cliente (NPS ou CSAT pós-atendimento);</li>
+<li>Motivo de reabertura de chamados;</li>
+<li>Volume de incidentes por canal de entrada (e-mail, chat, telefone);</li>
+<li>Taxa de resolução no primeiro contato;</li>
+<li>Perfil dos clientes com mais incidentes (segmento, porte, etc.);</li>
+<li>Análise de palavras-chave em descrições para identificar tendências emergentes.</li>
+</ul>
+<p>Essas informações permitem uma gestão mais proativa, melhoram a experiência do cliente e aumentam a eficiência operacional.</p>
+<hr>
+<h2 id="diagrama-do-fluxo-de-an%C3%A1lise-de-dados---sess%C3%A3o-2"><strong>Diagrama do Fluxo de Análise de Dados - Sessão 2</strong></h2>
+<p>O diagrama abaixo resume visualmente todo o processo de análise realizado, destacando as etapas, metodologias e implicações de cada questão abordada:</p>
+<pre><code class="language-mermaid"><div class="mermaid">%% Diagrama integrado da análise de dados - Sessão 2
+%% Representa o fluxo de trabalho e insights gerados
+
+graph TD
+    %% Definição de estilos para melhor visualização
+    classDef inicio fill:#4CAF50,stroke:#333,stroke-width:2px,color:white,font-weight:bold
+    classDef fase fill:#2196F3,stroke:#333,stroke-width:2px,color:white,font-weight:bold
+    classDef analise fill:#FF9800,stroke:#333,stroke-width:2px,color:white,font-weight:bold
+    classDef metodo fill:#FFEB3B,stroke:#888,stroke-width:1px,color:#333
+    classDef processamento fill:#E1F5FE,stroke:#888,stroke-width:1px,color:#333
+    classDef resultado fill:#B39DDB,stroke:#888,stroke-width:1px,color:#333
+    classDef visual fill:#E6E6FA,stroke:#888,stroke-width:1px,color:#333
+    classDef acao fill:#DDDDDD,stroke:#333,stroke-width:1px,color:#333,font-style:italic
+    classDef decisao fill:#FFD700,stroke:#333,stroke-width:2px,color:#333
+    classDef fim fill:#4CAF50,stroke:#333,stroke-width:2px,color:white,font-weight:bold
+
+    %% Início do fluxo de análise - Focado na seção 2 do documento RESPOSTA
+    START([Início da Análise<br>Seção 2 - Análise de Dados]):::inicio --> DADOS[Obtenção do Dataset<br>DataSet SE - Via Google API]:::fase
+    
+    %% Etapa de preparação dos dados
+    DADOS --> PREPARA["Preparação dos Dados:<br>1. Limpar nomes de colunas<br>2. Converter datas para datetime<br>3. Converter valores numéricos<br>4. Tratar valores ausentes"]:::fase
+    
+    %% Ramificação para as 5 análises específicas da seção 2
+    PREPARA --> ANALISE["Ramificação em 5 Análises<br>Seção 2.1 - 2.5"]:::fase
+    
+    %% Análise 1 - Mês com mais incidentes
+    ANALISE --> Q1["2.1 Mês com mais incidentes"]:::analise
+    Q1 --> Q1M["Metodologia:<br>Agrupar por mês/ano e contar incidentes"]:::metodo
+    Q1M --> Q1R["Resultado:<br>Junho 2024 - 117 incidentes<br>(+36% em relação a maio)"]:::resultado
+    Q1R --> Q1V["Visualização:<br>Gráfico de incidentes por mês"]:::visual
+    Q1V --> Q1I["Implicação:<br>Investigar causas do aumento<br>para mitigar problemas futuros"]:::acao
+    
+    %% Análise 2 - Mediana do tempo de finalização
+    ANALISE --> Q2["2.2 Mediana do tempo de finalização"]:::analise
+    Q2 --> Q2M["Metodologia:<br>1. Ordenar tempos de finalização<br>2. Remover outliers (método IQR)<br>3. Calcular mediana"]:::metodo
+    Q2M --> Q2R["Resultado:<br>78.71 horas"]:::resultado
+    Q2R --> Q2V["Visualização:<br>Histograma de distribuição<br>dos tempos de finalização"]:::visual
+    Q2V --> Q2I["Implicação:<br>Usar como benchmark para<br>avaliar eficiência operacional"]:::acao
+    
+    %% Análise 3 - Mediana do tempo de primeira resposta
+    ANALISE --> Q3["2.3 Mediana do tempo de<br>primeira resposta (prioritários)"]:::analise
+    Q3 --> Q3M["Metodologia:<br>1. Filtrar cards prioritários (TRUE)<br>2. Calcular mediana do tempo<br>de primeira resposta"]:::metodo
+    Q3M --> Q3R["Resultado:<br>10.03 horas"]:::resultado
+    Q3R --> Q3I["Implicação:<br>Avaliar alocação de recursos<br>para atendimento prioritário"]:::acao
+    
+    %% Análise 4 - Produto com mais incidentes
+    ANALISE --> Q4["2.4 Produto com mais incidentes"]:::analise
+    Q4 --> Q4M["Metodologia:<br>1. Agrupar por produto<br>2. Contar ocorrências<br>3. Calcular percentual"]:::metodo
+    Q4M --> Q4R["Resultado:<br>SmarterMail Umbler - 38 incidentes<br>(18,72% do total)"]:::resultado
+    Q4R --> Q4V["Visualização:<br>Gráfico de barras da distribuição<br>de incidentes por produto"]:::visual
+    Q4V --> Q4I["Implicação:<br>Priorizar melhorias no produto<br>com mais incidentes"]:::acao
+    
+    %% Análise 5 - Problema mais recorrente
+    ANALISE --> Q5["2.5 Problema mais recorrente"]:::analise
+    Q5 --> Q5M["Metodologia:<br>1. Agrupar por motivo do card<br>2. Identificar maior frequência"]:::metodo
+    Q5M --> Q5R["Resultado:<br>Cliente Bloqueado por Spam - 10x"]:::resultado
+    Q5R --> Q5I["Implicação:<br>Implementar SPF/DKIM/DMARC e<br>melhorar orientações aos clientes"]:::acao
+    
+    %% Conclusão da análise
+    Q1I & Q2I & Q3I & Q4I & Q5I --> INSIGHTS["Seção 2.6:<br>Importância da análise de dados<br>e sugestões adicionais"]:::fase
+    INSIGHTS --> CONC1["Conclusão 1:<br>Dados ajudam a identificar<br>padrões e tendências"]:::resultado
+    INSIGHTS --> CONC2["Conclusão 2:<br>Métricas guiam decisões<br>sobre alocação de recursos"]:::resultado
+    INSIGHTS --> CONC3["Conclusão 3:<br>Análises preditivas podem<br>antecipar problemas futuros"]:::resultado
+    
+    %% Documentação
+    CONC1 & CONC2 & CONC3 --> DOC["Documentação Final:<br>Seção 2 do documento RESPOSTA<br>e arquivo explanativo detalhado"]:::fim
+    
+    %% Conexões para os arquivos de saída reais
+    DOC -.-> GRAF1["./grafico_incidentes_por_mes_sessao_2.png"]:::visual
+    DOC -.-> GRAF2["./grafico_distribuicao_produtos_sessao_2.png"]:::visual
+    DOC -.-> GRAF3["./grafico_tempo_finalizacao_sessao_2.png"]:::visual
+    DOC -.-> TEXTO["resultados_analise_detalhada.txt"]:::visual
+</div></code></pre>
+
+</body>
+</html>
