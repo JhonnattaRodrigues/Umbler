@@ -1,0 +1,15 @@
+# Dependencies for Technical Challenge - Support Engineer
+# Análise de dados e visualização
+pandas>=2.0.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+
+# Integração Google Sheets API
+gspread>=5.10.0
+google-auth>=2.20.0
+google-auth-oauthlib>=1.0.0
+google-auth-httplib2>=0.1.0
+
+# Autenticação Google OAuth2
+google-api-python-client>=2.90.0
+google-api-core>=2.11.0
