@@ -34,6 +34,7 @@ Este projeto resolve quatro desafios técnicos específicos de Engenharia de Sup
 ├── 📁 markdown/                 # Documentação markdown de cada desafio
 ├── 📁 scripts/                  # Script Python para análise de dados (597 linhas)
 ├── 📄 index.html               # Dashboard principal (885 linhas, PWA-ready)
+├── 📄 LICENSE                  # Licença MIT do projeto
 ├── 📄 package.json             # Configurações Node.js e scripts de automação
 ├── 📄 requirements.txt         # Dependências Python para análise de dados
 └── 📄 README.md                # Esta documentação
