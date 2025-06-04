@@ -35,6 +35,7 @@ Este projeto resolve quatro desafios técnicos específicos de Engenharia de Sup
 ├── 📁 scripts/                  # Script Python para análise de dados (597 linhas)
 ├── 📄 index.html               # Dashboard principal (885 linhas, PWA-ready)
 ├── 📄 package.json             # Configurações Node.js e scripts de automação
+├── 📄 requirements.txt         # Dependências Python para análise de dados
 └── 📄 README.md                # Esta documentação
 ```
 
@@ -61,37 +62,49 @@ Este projeto resolve quatro desafios técnicos específicos de Engenharia de Sup
    cd desafio-engenharia-suporte
    ```
 
-2. **Instale as dependências Node.js:**
+2. **Instale as dependências Python:**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Instale as dependências Node.js:**
 
    ```bash
    npm install
    ```
 
-3. **Inicie o servidor de desenvolvimento:**
+4. **Inicie o servidor de desenvolvimento:**
 
    ```bash
    npm run dev
    ```
 
-4. **Acesse a aplicação:**
+5. **Acesse a aplicação:**
    - Abra `http://localhost:3000` no navegador
    - O dashboard principal será carregado automaticamente
 
 ### 🐍 Executando Análise de Dados
 
-1. **Navegue para a pasta scripts:**
+1. **Certifique-se de que as dependências Python estão instaladas:**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Navegue para a pasta scripts:**
 
    ```bash
    cd scripts
    ```
 
-2. **Execute o script de análise:**
+3. **Execute o script de análise:**
 
    ```bash
    python analise_dados_sessao_2.py
    ```
 
-3. **Verifique os resultados:**
+4. **Verifique os resultados:**
    - Gráficos gerados na pasta `assets/`
    - Relatório detalhado em `resultados_analise_detalhada.txt`
 
